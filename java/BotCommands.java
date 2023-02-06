@@ -24,28 +24,9 @@ public class BotCommands extends ListenerAdapter {
         if (command.equals("test")) {
             event.reply("test").queue();
 
-//        else if(command.equals("bitcoin")) {
-//
-//            event.deferReply().queue();
-//            try {
-//                String btcPrice = CryptoPrice.getPrice();
-//                event.getHook().sendMessage(btcPrice).queue();
-//            } catch (Exception e) {
-//                String btcError = ("An error occurred: " + e.getMessage());
-//                event.getHook().sendMessage(btcError).queue();
-//            }
-//        }
 
         }
-//        else if (command.equals("crypto price")) {
-//            OptionMapping cryptoTag = event.getOption("crypto-symbol");
-//            String cryptoSymbolDiscord = cryptoTag.getAsString();
-//
-//            System.out.println(cryptoSymbolDiscord);
-//            event.getChannel().sendMessage("The price of " + cryptoSymbolDiscord + " will be displayed here").queue();
-//            event.reply("Request successful!").setEphemeral(true).queue();
-//
-//        }
+
         else if (command.equals("crypto-price")) {
             OptionMapping cryptoOption = event.getOption("crypto-symbol");
             String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
@@ -57,7 +38,7 @@ public class BotCommands extends ListenerAdapter {
 
             NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
             String priceString = formatter.format(price);
-            event.reply("Request sent!").setEphemeral(true).queue();
+            event.reply("Request sent!").setEphemeral(false).queue();
             event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
         }
     }
@@ -68,13 +49,6 @@ public class BotCommands extends ListenerAdapter {
         List<CommandData> commandData = new ArrayList<>();
         //Test
         commandData.add(Commands.slash("test", "testing"));
-
-        //BTC price
-        commandData.add(Commands.slash("bitcoin", "Gives the current bitcoin price"));
-
-        //Crypto price
-//        OptionData cryptoSymbol = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
-//        commandData.add(Commands.slash("crypto-test", "Get the price of a crypto").addOptions(cryptoSymbol));
 
         //say <message>
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);

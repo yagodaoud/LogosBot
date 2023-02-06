@@ -26,7 +26,7 @@ public class BotEventListener extends ListenerAdapter {
 
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        event.getTextChannel().sendMessage("gay").queue();
+        event.getTextChannel().sendMessage("reacted").queue();
     }
 
 }
