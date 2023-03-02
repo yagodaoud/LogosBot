@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.text.html.Option;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.NumberFormat;
@@ -25,9 +25,7 @@ public class BotCommands extends ListenerAdapter {
             event.reply("test").queue();
 
 
-        }
-
-        else if (command.equals("crypto-price")) {
+        } else if (command.equals("crypto-price")) {
             OptionMapping cryptoOption = event.getOption("crypto-symbol");
             String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
 
@@ -40,9 +38,28 @@ public class BotCommands extends ListenerAdapter {
             String priceString = formatter.format(price);
             event.reply("Request sent!").setEphemeral(false).queue();
             event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
+
+        } else if (command.equals("bitcoin-alert-start")) {
+            BitcoinPriceAlert alert = new BitcoinPriceAlert();
+            alert.startAlerts(event.getTextChannel());
+            event.reply("Alert created!").queue();
+
+        } else if (command.equals("bitcoin-alert-stop")) {
+            BitcoinPriceAlert alert = new BitcoinPriceAlert();
+            alert.stopAlerts(event.getTextChannel());
+            event.reply("Alert disabled!").queue();
+
+        } else if (command.equals("bitcoin-scheduled-alert-start")) {
+            ScheduledAlert scheduledAlert = new ScheduledAlert(event.getTextChannel());
+            scheduledAlert.start(LocalTime.of(21,00, 00));
+            event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
+
+//        } else if (command.equals("bitcoin-scheduled-alert-stop")) {
+//            ScheduledAlert disabledScheduledAlert = new ScheduledAlert(event.getTextChannel());
+//            disabledScheduledAlert.start(LocalTime.of(21, 0));
+//            event.reply("The current scheduled alert has been stopped!").queue();
         }
     }
-
     //Registers the commands
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
@@ -53,6 +70,13 @@ public class BotCommands extends ListenerAdapter {
         //say <message>
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
         commandData.add(Commands.slash("crypto-price", "Get the price of a crypto").addOptions(cryptoTag));
+
+        commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin"));
+        commandData.add(Commands.slash("bitcoin-alert-stop", "Disable previous tracker for Bitcoin"));
+
+        commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));
+        //NOT WORKING
+        //commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }

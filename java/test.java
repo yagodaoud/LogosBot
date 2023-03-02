@@ -1,58 +1,55 @@
 package main.java;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.entities.TextChannel;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class test {
 
 
+    private static final String BTC_SYMBOL = "BTC";
+    private static final String apiKey = "e77bacb5-8443-4bc7-8f5b-e0e26b497abd";
+    private static final double VARIATION_THRESHOLD = 0.001;
 
-    public static void main(String[] args) {
-            try {
-                String symbol = "ETH";
-                URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbol);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("X-CMC_Pro_API_Key", "e77bacb5-8443-4bc7-8f5b-e0e26b497abd");
+    private static final double THRESHOLD = 0.001;
+    private static final long ALERT_INTERVAL = 10; // seconds
+    private boolean alerted;
 
-                int status = connection.getResponseCode();
-                if (status == 200) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                    StringBuilder response = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-                    reader.close();
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    private double lastPrice;
 
-                    JSONObject json = new JSONObject(response.toString());
-                    JSONObject symbolData = json.getJSONObject("data")
-                            .getJSONObject(symbol)
-                            .getJSONObject("quote")
-                            .getJSONObject("USD");
-                    double price = symbolData.getDouble("price");
-                    System.out.println(price);
-                } else {
-                    System.err.println("Failed to fetch data, status code: " + status);
-                    return;
-                }
-            } catch (Exception e) {
-                System.err.println("An error occurred: " + e.getMessage());
-                return;
-            }
-            return;
-        }
+    public String getApiKey() {
+        return apiKey.toString();
     }
 
+    public test() {
+        CryptoPrice api = new CryptoPrice(apiKey);
+        lastPrice = api.getPrice(BTC_SYMBOL);
+    }
+
+    public String start; {
+        executorService.scheduleAtFixedRate(() -> {
+            CryptoPrice api = new CryptoPrice(apiKey);
+            double currentPrice = api.getPrice(BTC_SYMBOL);
+            double variation = (currentPrice - lastPrice) / lastPrice;
+            if (Math.abs(variation) >= VARIATION_THRESHOLD) {
+                String direction = variation > 0 ? "up" : "down";
+                String emoji = variation > 0 ? "📈" : "📉";
+                String priceString = String.format("$%.2f", currentPrice);
+                String bitcoinAlert = "Bitcoin is " + direction + "! " + priceString + " (" + (variation * 100) + "%) " + emoji;
+                System.out.println(bitcoinAlert);
+                lastPrice = currentPrice;
+                return;
+            } else if (Math.abs(variation) < THRESHOLD && alerted) {
+                alerted = false;
+            }
+        }, 0, ALERT_INTERVAL, TimeUnit.SECONDS);
+    }
+
+    public void stopAlerts() {
+        executorService.shutdown();
+    }
+}
 

@@ -7,21 +7,22 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class CryptoPrice {
-    private String cryptoSymbol;
+public class CryptoPrice { //Api connection and price getter class
+    public String cryptoSymbol;
 
     public CryptoPrice(String cryptoSymbol) {
         this.cryptoSymbol = cryptoSymbol;
 
     }
 
-    public  double getPrice(String symbol) {
+
+    public double getPrice(String symbol) { //Coin symbol input from discord as argument
         try {
             String symbolCrypto = symbol;
-            URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbolCrypto);
+            URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbolCrypto); //Symbol is passed as url Id for the coin wanted
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-CMC_Pro_API_Key", "CoinMarketApi Token here");
+            connection.setRequestProperty("X-CMC_Pro_API_Key", "Api Key"); //Make the connection
 
             int status = connection.getResponseCode();
             if (status == 200) {
@@ -38,7 +39,7 @@ public class CryptoPrice {
                         .getJSONObject(symbolCrypto)
                         .getJSONObject("quote")
                         .getJSONObject("USD");
-                double price = symbolData.getDouble("price");
+                double price = symbolData.getDouble("price"); //Get price from api url and return it to de displayed in BotCommands class
                 return price;
             } else {
                 System.err.println("Failed to fetch data, status code: " + status);
