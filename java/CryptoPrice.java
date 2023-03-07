@@ -22,7 +22,7 @@ public class CryptoPrice { //Api connection and price getter class
             URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbolCrypto); //Symbol is passed as url Id for the coin wanted
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-CMC_Pro_API_Key", "Api Key"); //Make the connection
+            connection.setRequestProperty("X-CMC_Pro_API_Key", "e77bacb5-8443-4bc7-8f5b-e0e26b497abd"); //Make the connection
 
             int status = connection.getResponseCode();
             if (status == 200) {

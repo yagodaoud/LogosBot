@@ -26,7 +26,7 @@ public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT 
     }
 
     public void start(LocalTime time) { //Getting the time from BotCommands parameter
-        // Cancel the task if it is already scheduled (NOT WORKING)
+        // Cancel the task if it is already scheduled
         if (task != null) {
             task.cancel();
         }
@@ -55,13 +55,12 @@ public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT 
         long delay = Duration.between(now, scheduledTime).toMillis();
         timer.schedule(task, delay, TimeUnit.DAYS.toMillis(1));
     }
-//      STOP METHOD IS NOT WORKING, I'LL FIGURE OUT LATER
 
-//    public void stop() {
-//        if (task != null) {
-//            task.cancel();
-//            task = null;
-//            System.out.println("Stopped");
-//        }
-//    }
+    public void stop() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+            System.out.println("Stopped");
+        }
+    }
 }

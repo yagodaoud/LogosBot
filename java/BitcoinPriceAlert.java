@@ -10,7 +10,7 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
 
 
     private static final String BTC_SYMBOL = "BTC"; //Set the crypto symbol you want
-    private static final String apiKey = "Api key";
+    private static final String apiKey = "e77bacb5-8443-4bc7-8f5b-e0e26b497abd";
     private static final double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
 
     private static final double THRESHOLD = 0.01; //Same as above
