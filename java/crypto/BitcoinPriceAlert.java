@@ -1,4 +1,4 @@
-package main.java;
+package main.java.crypto;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 

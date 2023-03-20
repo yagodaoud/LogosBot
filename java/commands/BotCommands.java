@@ -1,5 +1,14 @@
-package main.java;
+package main.java.commands;
 
+import main.java.audio.PlayCommand;
+import main.java.audio.RandomAudioPlayer;
+import main.java.crypto.BitcoinPriceAlert;
+import main.java.crypto.CryptoPrice;
+import main.java.crypto.ScheduledAlert;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -9,14 +18,21 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.text.NumberFormat;
+import java.util.List;
 
 public class BotCommands extends ListenerAdapter {
 
     private Map<String, ScheduledAlert> scheduledAlertMap = new HashMap<>();
+    private String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
+
+    private Member member;
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -52,7 +68,7 @@ public class BotCommands extends ListenerAdapter {
 
         } else if (command.equals("bitcoin-scheduled-alert-start")) {
             ScheduledAlert scheduledAlert = new ScheduledAlert(event.getTextChannel());
-            scheduledAlert.start(LocalTime.of(15, 19, 30));
+            scheduledAlert.start(LocalTime.of(21, 00));
             scheduledAlertMap.put(event.getTextChannel().getId(), scheduledAlert);
             event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
 
@@ -63,6 +79,14 @@ public class BotCommands extends ListenerAdapter {
                 scheduledAlertMap.remove(event.getTextChannel().getId());
                 event.reply("The current scheduled alert has been stopped!").queue();
             }
+        }  else if (command.equals("random-audio-player")) {
+            RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
+            randomAudioPlayer.playRandomAudio();
+            event.reply("EU SOU MUITO MAIS LOUCO QUE TODOS VOCÊS").queue();
+
+        } else if (command.equals("play")){
+            this.member = member.getGuild().getMember(User);
+            PlayCommand playCommand = new PlayCommand(event.getTextChannel(), event.getMember(), member.getVoiceState());
         }
     }
     //Registers the commands
@@ -81,6 +105,9 @@ public class BotCommands extends ListenerAdapter {
 
         commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
+
+        commandData.add(Commands.slash("play", "Play a song"));
+        commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }

@@ -1,6 +1,6 @@
 package main.java;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import main.java.crypto.CryptoPrice;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

@@ -1,4 +1,4 @@
-package main.java;
+package main.java.crypto;
 
 import org.json.JSONObject;
 
