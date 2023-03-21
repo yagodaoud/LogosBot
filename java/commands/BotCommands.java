@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +39,7 @@ public class BotCommands extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
 
+        AudioManager audioManager = null;
         if (command.equals("test")) {
             event.reply("test").queue();
 
@@ -79,14 +81,24 @@ public class BotCommands extends ListenerAdapter {
                 scheduledAlertMap.remove(event.getTextChannel().getId());
                 event.reply("The current scheduled alert has been stopped!").queue();
             }
-        }  else if (command.equals("random-audio-player")) {
+        } else if (command.equals("random-audio-player")) {
             RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
             randomAudioPlayer.playRandomAudio();
-            event.reply("EU SOU MUITO MAIS LOUCO QUE TODOS VOCÊS").queue();
+            event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
 
-        } else if (command.equals("play")){
-            this.member = member.getGuild().getMember(User);
-            PlayCommand playCommand = new PlayCommand(event.getTextChannel(), event.getMember(), member.getVoiceState());
+        } else if (command.equals("play")) {
+            TextChannel channel = event.getTextChannel();
+            Member member = event.getMember();
+            GuildVoiceState voiceState = member.getVoiceState();
+            member.getVoiceState();
+            event.reply("Joining!").queue();
+            PlayCommand playCommand = new PlayCommand(channel, member, voiceState);
+            playCommand.handle(channel);
+
+            VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
+            if (!audioChannel.getGuild().getAudioManager().isConnected()) {
+                audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
+            }
         }
     }
     //Registers the commands
