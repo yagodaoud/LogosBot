@@ -3,7 +3,6 @@ package main.java.audio;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -70,7 +69,7 @@ public class PlayerManager {
         });
     }
 
-     public static PlayerManager getInstance(){
+     public static PlayerManager getInstance(String url){
         if (INSTANCE == null){
             INSTANCE = new PlayerManager();
         }

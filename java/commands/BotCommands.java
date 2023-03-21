@@ -87,12 +87,20 @@ public class BotCommands extends ListenerAdapter {
             event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
 
         } else if (command.equals("play")) {
+            OptionMapping songOption = event.getOption("song-url");
+            String songUrl = songOption.getAsString();
+            System.out.println(songUrl);
+
             TextChannel channel = event.getTextChannel();
             Member member = event.getMember();
             GuildVoiceState voiceState = member.getVoiceState();
             member.getVoiceState();
-            event.reply("Joining!").queue();
-            PlayCommand playCommand = new PlayCommand(channel, member, voiceState);
+
+            event.reply("Joining/Adding song!").queue();
+
+
+            PlayCommand playCommand = new PlayCommand(songUrl);
+            playCommand.Play(channel, member, voiceState);
             playCommand.handle(channel);
 
             VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
@@ -108,7 +116,6 @@ public class BotCommands extends ListenerAdapter {
         //Test
         commandData.add(Commands.slash("test", "testing"));
 
-        //say <message>
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
         commandData.add(Commands.slash("crypto-price", "Get the price of a crypto").addOptions(cryptoTag));
 
@@ -118,7 +125,9 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
-        commandData.add(Commands.slash("play", "Play a song"));
+
+        OptionData songUrl = new OptionData(OptionType.STRING, "song-url", "Enter the song url", true);
+        commandData.add(Commands.slash("play", "Play a song").addOptions(songUrl));
         commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();

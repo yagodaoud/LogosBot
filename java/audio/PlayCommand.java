@@ -4,12 +4,16 @@ import net.dv8tion.jda.api.entities.*;
 
 public class PlayCommand {
 
-    private final TextChannel channel;
-    private final Member member;
-    private final GuildVoiceState voiceState;
-    private final String url;
+    private TextChannel channel;
+    private  Member member;
+    private  GuildVoiceState voiceState;
+    public String url;
 
-    public PlayCommand(TextChannel channel, Member member, GuildVoiceState voiceState) {
+    public PlayCommand(String urlDiscord){
+        this.url = urlDiscord;
+    }
+
+    public void Play(TextChannel channel, Member member, GuildVoiceState voiceState) {
         this.channel = channel;
         this.member = member;
         this.voiceState = voiceState;
@@ -32,6 +36,6 @@ public class PlayCommand {
         }
 
         PlayerManager.getInstance(url)
-                .loadAndPlay(channel, "https://www.youtube.com/watch?v=79BE4kOPbdk");
+                .loadAndPlay(channel, url);
     }
 }
