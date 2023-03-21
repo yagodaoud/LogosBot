@@ -1,5 +1,5 @@
 # Java Discord Bot for many purposes
 
 ### Commands
-Related to crypto price and alerts
-Music Player
+Related to crypto price and price alerts
+\nMusic Player
