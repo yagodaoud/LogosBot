@@ -96,7 +96,7 @@ public class BotCommands extends ListenerAdapter {
             GuildVoiceState voiceState = member.getVoiceState();
             member.getVoiceState();
 
-            event.reply("Joining/Adding song!").queue();
+            event.reply("Adding song!").queue();
 
 
             PlayCommand playCommand = new PlayCommand(songUrl);
