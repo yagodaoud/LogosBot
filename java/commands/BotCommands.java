@@ -1,6 +1,7 @@
 package main.java.commands;
 
 import main.java.audio.PlayCommand;
+import main.java.audio.PlayerManager;
 import main.java.audio.RandomAudioPlayer;
 import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.CryptoPrice;
@@ -86,8 +87,18 @@ public class BotCommands extends ListenerAdapter {
             randomAudioPlayer.playRandomAudio();
             event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
 
+        } else if (command.equals("join")) {
+            Member member = event.getMember();
+            Guild guild = event.getGuild();
+            TextChannel channel = event.getTextChannel();
+            GuildVoiceState voiceState = member.getVoiceState();
+
+            PlayCommand.joinVoiceChannel(channel, voiceState, guild);
+
+            event.reply("Joining voice channel").setEphemeral(true).queue();
+
         } else if (command.equals("play")) {
-            OptionMapping songOption = event.getOption("song-url");
+            OptionMapping songOption = event.getOption("song_search_or_link");
             String songUrl = songOption.getAsString();
             System.out.println(songUrl);
 
@@ -96,7 +107,7 @@ public class BotCommands extends ListenerAdapter {
             GuildVoiceState voiceState = member.getVoiceState();
             member.getVoiceState();
 
-            event.reply("Adding song!").queue();
+            event.reply("Adding song!").setEphemeral(true).queue();
 
 
             PlayCommand playCommand = new PlayCommand(songUrl);
@@ -107,8 +118,16 @@ public class BotCommands extends ListenerAdapter {
             if (!audioChannel.getGuild().getAudioManager().isConnected()) {
                 audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
             }
+        } else if (command.equals("skip")) {
+            PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
+            event.reply("Skipped to next track").setEphemeral(true).queue();
+        } else if (command.equals("leave")) {
+            PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
+            event.reply("Left the voice channel").setEphemeral(true).queue();
         }
     }
+
+
     //Registers the commands
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
@@ -126,8 +145,11 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
 
-        OptionData songUrl = new OptionData(OptionType.STRING, "song-url", "Enter the song url", true);
+        OptionData songUrl = new OptionData(OptionType.STRING, "song_search_or_link", "Enter the song search or url", true);
         commandData.add(Commands.slash("play", "Play a song").addOptions(songUrl));
+        commandData.add(Commands.slash("join", "The bot will join the current channel"));
+        commandData.add(Commands.slash("skip", "Skip to next track"));
+        commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
         commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();

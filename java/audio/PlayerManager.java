@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlayerManager {
@@ -49,12 +50,23 @@ public class PlayerManager {
                         .append(track.getInfo().title)
                         .append("` by `")
                         .append(track.getInfo().author)
+                        .append("`")
                         .queue();
             }
 
             @Override
-            public void playlistLoaded(AudioPlaylist audioPlaylist) {
+            public void playlistLoaded(AudioPlaylist playlist) { //Search and play method (playlist loaded name must be ignored)
+                final List<AudioTrack> tracks = playlist.getTracks();
 
+                final AudioTrack firstTrack = tracks.get(0);
+                musicManager.scheduler.queue(firstTrack);
+
+                channel.sendMessage("Added to queue: `")
+                        .append(firstTrack.getInfo().title)
+                        .append("` by `")
+                        .append(firstTrack.getInfo().author)
+                        .append("`")
+                        .queue();
             }
 
             @Override
@@ -69,7 +81,7 @@ public class PlayerManager {
         });
     }
 
-     public static PlayerManager getInstance(String url){
+    public static PlayerManager getInstance(){
         if (INSTANCE == null){
             INSTANCE = new PlayerManager();
         }
