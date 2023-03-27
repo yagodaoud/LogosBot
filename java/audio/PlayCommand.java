@@ -22,7 +22,7 @@ public class PlayCommand {
     public static PlayCommand skipTrack(TextChannel channel, Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         musicManager.scheduler.nextTrack();
-        channel.sendMessage("Skipped").queue();
+        channel.sendMessage("Skipped the current song").queue();
         return null;
     }
 
