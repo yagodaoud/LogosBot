@@ -1,4 +1,5 @@
-## Java Discord Bot 
+## Logos Discord Bot 
+<img src="https://cdn-icons-png.flaticon.com/512/2838/2838722.png" alt="Logos" width="100" height="100">
 
 ### Commands
 #### Related to crypto price and price alerts 
