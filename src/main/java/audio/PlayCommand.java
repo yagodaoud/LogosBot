@@ -9,6 +9,8 @@ public class PlayCommand {
     private Member member;
     private GuildVoiceState voiceState;
     public String url;
+    private static boolean joined;
+    private static int counter;
 
 
     public PlayCommand(String urlDiscord) {
@@ -29,6 +31,7 @@ public class PlayCommand {
 
     public static void joinVoiceChannel(TextChannel channel, GuildVoiceState voiceState, Guild guild) {
 
+
         if (!voiceState.inAudioChannel()) {
             channel.sendMessage("You must be in a voice channel to use this command.").queue();
             return;
@@ -41,9 +44,19 @@ public class PlayCommand {
             return;
         }
 
-        net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
-        audioManager.openAudioConnection(audioChannel);
-        channel.sendMessage("Joined voice channel: " + audioChannel.getName()).queue();
+        if (voiceState.inAudioChannel()) {
+
+            net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
+            audioManager.openAudioConnection(audioChannel);
+            channel.sendMessage("Joining voice channel: " + audioChannel.getName()).queue();
+            joined = true;
+            counter += 1 ;
+        }
+
+        if (joined & counter == 2) {
+            channel.sendMessage("I'm already in the voice channel").queue();
+            counter = 0;
+        }
     }
 
 
@@ -52,6 +65,7 @@ public class PlayCommand {
         if (connectedChannel != null) {
             connectedChannel.getGuild().getAudioManager().closeAudioConnection();
             channel.sendMessage("Left the voice channel").queue();
+            joined = false;
         } else {
             channel.sendMessage("Not connected to a voice channel.").queue();
         }
