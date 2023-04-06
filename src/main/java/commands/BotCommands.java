@@ -117,11 +117,7 @@ public class BotCommands extends ListenerAdapter {
         } else if (command.equals("leave")) {
             PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
             event.reply("Left the voice channel").setEphemeral(true).queue();
-        }   else if (command.equals("stop")) {
-        PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
-        event.reply("Stopped the queue").setEphemeral(true).queue();
-    }
-
+        }
     }
 
 
@@ -147,7 +143,6 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("join", "The bot will join the current channel"));
         commandData.add(Commands.slash("skip", "Skips to next track"));
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
-        commandData.add(Commands.slash("stop", "Stops the track and clears the queue"));
         commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();

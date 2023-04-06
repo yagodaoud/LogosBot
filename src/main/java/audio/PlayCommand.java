@@ -29,14 +29,6 @@ public class PlayCommand {
         return null;
     }
 
-    public static PlayCommand stopCommand(TextChannel channel, Guild guild) {
-        final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
-        PlayerManager.stopAndClear(musicManager.audioPlayer);
-        channel.sendMessage("Stopped and cleared the queue").queue();
-        return null;
-
-    }
-
     public static void joinVoiceChannel(TextChannel channel, GuildVoiceState voiceState, Guild guild) {
 
 
@@ -53,6 +45,7 @@ public class PlayCommand {
         }
 
         if (voiceState.inAudioChannel()) {
+
             net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
             audioManager.openAudioConnection(audioChannel);
             channel.sendMessage("Joining voice channel: " + audioChannel.getName()).queue();

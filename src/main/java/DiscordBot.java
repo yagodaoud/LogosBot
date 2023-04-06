@@ -23,7 +23,7 @@ public class DiscordBot {
     public DiscordBot() throws LoginException {
 
         config = Dotenv.configure().load();
-        String token = config.get("TOKENDISCORD");
+        String token = config.get("TOKEN");
 
         JDA bot = JDABuilder.createDefault(token,
                         GatewayIntent.GUILD_MEMBERS,
