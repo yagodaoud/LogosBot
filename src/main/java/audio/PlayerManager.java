@@ -1,6 +1,7 @@
 package main.java.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -36,6 +37,10 @@ public class PlayerManager {
 
             return guildMusicManager;
         });
+    }
+
+    public static void stopAndClear(AudioPlayer player){
+        player.destroy();
     }
 
     public void loadAndPlay(TextChannel channel, String trackUrl){
