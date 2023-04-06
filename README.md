@@ -12,7 +12,7 @@
 - Join
 - Play (search name or link)
 - Skip
-- Stop (not done yet)
+- Stop 
 - Loop (not done yet)
 - Leave
 
