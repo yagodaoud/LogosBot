@@ -28,6 +28,15 @@ public class PlayCommand {
         channel.sendMessage("Skipped the current song").queue();
         return null;
     }
+    public static PlayCommand stopCommand(TextChannel channel, Guild guild) {
+        final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
+        PlayerManager.stopAndClear(musicManager.audioPlayer);
+        channel.sendMessage("Stopped and cleared the queue").queue();
+        return null;
+
+    }
+
+
 
     public static void joinVoiceChannel(TextChannel channel, GuildVoiceState voiceState, Guild guild) {
 
