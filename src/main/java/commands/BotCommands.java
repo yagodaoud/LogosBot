@@ -111,6 +111,24 @@ public class BotCommands extends ListenerAdapter {
             if (!audioChannel.getGuild().getAudioManager().isConnected()) {
                 audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
             }
+        } else if (command.equals("playlist-link")){
+            OptionMapping playlistOption = event.getOption("playlist_link");
+
+            List<String> urls = new ArrayList<>(Collections.singletonList(playlistOption.getAsString()));
+            System.out.println(urls);
+
+            TextChannel channel = event.getTextChannel();
+            Member member = event.getMember();
+            GuildVoiceState voiceState = member.getVoiceState();
+            member.getVoiceState();
+
+            event.reply("Adding playlist!").setEphemeral(true).queue();
+
+            PlayCommand playCommand = new PlayCommand(urls);
+            playCommand.Play(channel,member,voiceState);
+            PlayCommand.addPlaylist(event.getTextChannel(), event.getGuild(), urls);
+            playCommand.handle(channel);
+
         } else if (command.equals("skip")) {
             PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
             event.reply("Skipped to next track").setEphemeral(true).queue();
@@ -120,8 +138,19 @@ public class BotCommands extends ListenerAdapter {
         } else if (command.equals("stop")) {
             PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
             event.reply("Stopped the queue").setEphemeral(true).queue();
+        }  else if (command.equals("loop")) {
+            int counter = 0;
+        PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
+            if (counter == 0) {
+                event.reply("Looping is on").setEphemeral(true).queue();
+                counter = 1;
+            }
+            if (counter == 1){
+                event.reply("Looping is off").setEphemeral(true).queue();
+                counter = 0;
+            }
 
-        }
+    }
     }
 
 
@@ -144,6 +173,8 @@ public class BotCommands extends ListenerAdapter {
 
         OptionData songUrl = new OptionData(OptionType.STRING, "song_search_or_link", "Enter the song search or url", true);
         commandData.add(Commands.slash("play", "Plays a song").addOptions(songUrl));
+        OptionData playlistOption = new OptionData(OptionType.STRING, "playlist_link", "Enter the playlist link", true);
+        commandData.add(Commands.slash("playlist-link", "Load and play a playlist from Youtube").addOptions(playlistOption));
         commandData.add(Commands.slash("join", "The bot will join the current channel"));
         commandData.add(Commands.slash("skip", "Skips to next track"));
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));

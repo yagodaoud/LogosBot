@@ -3,6 +3,9 @@ package main.java.audio;
 import net.dv8tion.jda.api.entities.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PlayCommand {
 
@@ -12,9 +15,13 @@ public class PlayCommand {
     private static boolean joined;
     private static int counter;
 
+    private List<String> urls = new ArrayList<>();
 
-    public PlayCommand(String urlDiscord) {
-        this.url = urlDiscord;
+    public PlayCommand(String url) {
+        this.url = url;
+    }
+    public PlayCommand(List<String> urls) {
+        this.urls = urls;
     }
 
     public void Play(TextChannel channel, Member member, GuildVoiceState voiceState) {
@@ -34,6 +41,15 @@ public class PlayCommand {
         channel.sendMessage("Stopped and cleared the queue").queue();
         return null;
 
+    }
+    public static void addPlaylist(TextChannel channel, Guild guild, List<String> urls) {
+        new PlayerManager().loadPlaylist(channel, urls.toString());
+
+        for(String url : urls){
+        PlayCommand playCommand = new PlayCommand(url);
+        playCommand.Play(channel, guild.getSelfMember(), guild.getSelfMember().getVoiceState());
+        playCommand.handle(channel);
+        }
     }
 
 
@@ -90,11 +106,6 @@ public class PlayCommand {
             return;
         }
 
-//        if (selfVoiceState.inAudioChannel()){
-//            channel.sendMessage("I'm already in a voice channel!").queue();
-//            return;
-//        }
-
         VoiceChannel voiceChannel = (VoiceChannel) audioChannel;
         GuildVoiceState memberVoiceState = member.getVoiceState();
 
@@ -105,12 +116,14 @@ public class PlayCommand {
 
         String link = String.join(" ", url);
 
-        if (!isUrl(link)) {
+        if (!isUrl(link) || !link.startsWith("https://www.youtube.com/playlist")) {
             link = "ytsearch:" + link;
         }
-
-        PlayerManager.getInstance()
-                .loadAndPlay(channel, link);
+        if (link.startsWith("https://www.youtube.com/playlist")) {
+            PlayerManager.getInstance().loadPlaylist(channel, link);
+        } else if (!link.isEmpty()) {
+            PlayerManager.getInstance().loadAndPlay(channel, link);
+        }
     }
 
     private boolean isUrl(String url) {

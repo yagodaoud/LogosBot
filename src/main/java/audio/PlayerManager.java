@@ -21,7 +21,7 @@ public class PlayerManager {
     private final Map<Long, AudioManager> musicManagers;
     private final AudioPlayerManager audioPlayerManager;
 
-    public PlayerManager(){
+    public PlayerManager() {
         this.musicManagers = new HashMap<>();
         this.audioPlayerManager = new DefaultAudioPlayerManager();
 
@@ -39,11 +39,11 @@ public class PlayerManager {
         });
     }
 
-    public static void stopAndClear(AudioPlayer player){
+    public static void stopAndClear(AudioPlayer player) {
         player.destroy();
     }
 
-    public void loadAndPlay(TextChannel channel, String trackUrl){
+    public void loadAndPlay(TextChannel channel, String trackUrl) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
 
         this.audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
@@ -86,10 +86,42 @@ public class PlayerManager {
         });
     }
 
-    public static PlayerManager getInstance(){
-        if (INSTANCE == null){
+    public static PlayerManager getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new PlayerManager();
         }
         return INSTANCE;
+    }
+
+    public void loadPlaylist(TextChannel channel, String playlistUrl) {
+        AudioManager musicManager = getMusicManager(channel.getGuild());
+        System.out.println(playlistUrl);
+
+        this.audioPlayerManager.loadItemOrdered(musicManager, playlistUrl, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                musicManager.scheduler.queue(track);
+                channel.sendMessage("Added to queue: " + track.getInfo().title).queue();
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                List<AudioTrack> tracks = playlist.getTracks();
+                channel.sendMessage("Added " + tracks.size() + " tracks from playlist " + playlist.getName()).queue();
+                for (AudioTrack track : tracks) {
+                    musicManager.scheduler.queue(track);
+                }
+            }
+
+            @Override
+            public void noMatches() {
+                channel.sendMessage("Could not find any tracks or playlists with that URL").queue();
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                channel.sendMessage("Could not load playlist: " + exception.getMessage()).queue();
+            }
+        });
     }
 }

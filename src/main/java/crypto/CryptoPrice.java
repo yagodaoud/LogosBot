@@ -1,5 +1,6 @@
 package main.java.crypto;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -9,11 +10,17 @@ import java.net.URL;
 
 public class CryptoPrice { //Api connection and price getter class
     public String cryptoSymbol;
+    private final Dotenv config;
+    private String token;
 
     public CryptoPrice(String cryptoSymbol) {
         this.cryptoSymbol = cryptoSymbol;
+        config = Dotenv.configure().load();
+        String token = config.get("TOKENCMC");
 
     }
+
+
 
 
     public double getPrice(String symbol) { //Coin symbol input from discord as argument
@@ -22,7 +29,7 @@ public class CryptoPrice { //Api connection and price getter class
             URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbolCrypto); //Symbol is passed as url Id for the coin wanted
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("X-CMC_Pro_API_Key", "YOUR_TOKEN_HERE"); //Make the connection
+            connection.setRequestProperty("X-CMC_Pro_API_Key", token); //Make the connection
 
             int status = connection.getResponseCode();
             if (status == 200) {
