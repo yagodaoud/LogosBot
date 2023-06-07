@@ -53,6 +53,8 @@ public class PlayerManager {
 
                 channel.sendMessage("Added to queue: `")
                         .append(track.getInfo().title)
+                        //.append(",")
+                        .append((char) track.getDuration())
                         .append("` by `")
                         .append(track.getInfo().author)
                         .append("`")
