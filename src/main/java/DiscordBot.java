@@ -19,6 +19,7 @@ import okhttp3.Cache;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 
 public class DiscordBot {
 
@@ -30,11 +31,6 @@ public class DiscordBot {
         config = Dotenv.configure().load();
         String token = config.get("TOKENDISCORD");
         eventListener = new BotEventListener();
-
-        eventListener.addOnlineStatusChangeListener(onlineMembers -> {
-            String activityName = "Users online: " + onlineMembers;
-            bot.getPresence().setActivity(Activity.listening(activityName));
-        });
 
         bot = JDABuilder.createDefault(token,
                         GatewayIntent.GUILD_MEMBERS,
@@ -58,6 +54,11 @@ public class DiscordBot {
                 .addEventListeners(new BotCommands())
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
+        bot.getGatewayPool().scheduleAtFixedRate(() -> {
+            int onlineMembers = eventListener.getQuantityOnlineMembers();
+            bot.getPresence().setActivity(Activity.listening("Users online: " + onlineMembers));
+        }, 0, 60, TimeUnit.SECONDS);
+        System.out.printf("Start");
     }
 
     public static void main(String[] args) {
