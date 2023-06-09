@@ -1,6 +1,7 @@
 package main.java.commands;
 
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -18,10 +19,11 @@ import java.util.function.Consumer;
 
 public class BotEventListener extends ListenerAdapter implements BotStatusObserver {
 
+
+    private String guildId = "725848520950546465";
     private UserUpdateOnlineStatusEvent onlineStatusEvent = null;
     private int onlineMembers = 0;
     private List<Consumer<Integer>> onlineStatusChangeListeners = new ArrayList<>();
-    private OnlineStatusChangeEvent statusChangeEvent = new OnlineStatusChangeEvent();
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
@@ -48,8 +50,9 @@ public class BotEventListener extends ListenerAdapter implements BotStatusObserv
     }
 
     @Override
-    public void onUserUpdateOnlineStatus(UserUpdateOnlineStatusEvent event) {
+    public void onUserUpdateOnlineStatus(@NotNull UserUpdateOnlineStatusEvent event) {
         System.out.println("test 1");
+
         onlineStatusEvent = event;
         int onlineMembers = getQuantityOnlineMembers();
         for (Consumer<Integer> listener : onlineStatusChangeListeners) {
@@ -63,7 +66,9 @@ public class BotEventListener extends ListenerAdapter implements BotStatusObserv
             return 0;
         }
         System.out.println("test 3");
-        List<Member> members = onlineStatusEvent.getGuild().getMembers();
+        Guild guild = onlineStatusEvent.getJDA().getGuildById(guildId);
+        assert guild != null;
+        List<Member> members = guild.getMembers();
         int onlineMembers = 0;
         for (Member member : members) {
             if (member.getOnlineStatus() == OnlineStatus.ONLINE) {

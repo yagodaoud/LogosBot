@@ -9,12 +9,10 @@ import main.java.commands.CustomActivity;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import okhttp3.Cache;
 
 
 import javax.security.auth.login.LoginException;
@@ -58,7 +56,6 @@ public class DiscordBot {
             int onlineMembers = eventListener.getQuantityOnlineMembers();
             bot.getPresence().setActivity(Activity.listening("Users online: " + onlineMembers));
         }, 0, 60, TimeUnit.SECONDS);
-        System.out.printf("Start");
     }
 
     public static void main(String[] args) {
