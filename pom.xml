@@ -19,6 +19,10 @@
             <name>m2-dv8tion</name>
             <url>https://m2.dv8tion.net/releases</url>
         </repository>
+        <repository>
+            <id>coly</id>
+            <url>https://m2.coly.dev/releases</url>
+        </repository>
 
     </repositories>
 
@@ -50,7 +54,6 @@
             <version>8.0.32</version>
         </dependency>
 
-
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
@@ -68,10 +71,8 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>5.3.1</version>
-            <scope>test</scope>
+            <scope>compile</scope>
         </dependency>
-
-
 
     </dependencies>
 </project>

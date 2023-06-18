@@ -65,4 +65,8 @@ public class DiscordBot {
             System.out.println("Invalid token");
         }
     }
+
+    public void shutdown(){
+        bot.shutdown();
+    }
 }
