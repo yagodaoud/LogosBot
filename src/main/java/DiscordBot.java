@@ -20,6 +20,7 @@ import javax.security.auth.login.LoginException;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class DiscordBot extends ListenerAdapter {
@@ -56,7 +57,10 @@ public class DiscordBot extends ListenerAdapter {
                 .addEventListeners(new BotCommands())
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
-
+        bot.getGatewayPool().scheduleAtFixedRate(() -> {
+            int onlineMembers = eventListener.getQuantityOnlineMembers();
+            bot.getPresence().setActivity(Activity.listening("Users online: " + onlineMembers));
+        }, 0, 60, TimeUnit.SECONDS);
 
         bot.addEventListener(this);
     }
@@ -73,9 +77,6 @@ public class DiscordBot extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         System.out.println("Bot is ready!");
         members = getMembers();
-        for (Member member : members) {
-            System.out.println(member);
-        }
         try {
             InsertUser.insertUsers();
         } catch (SQLException e) {
