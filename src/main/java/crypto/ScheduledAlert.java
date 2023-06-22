@@ -26,7 +26,6 @@ public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT 
     }
 
     public void start(LocalTime time) { //Getting the time from BotCommands parameter
-        // Cancel the task if it is already scheduled
         if (task != null) {
             task.cancel();
         }
@@ -35,11 +34,11 @@ public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT 
             @Override
             public void run() {
                 System.out.println("Started");
-                CryptoPrice cmcApi = new CryptoPrice(symbol); //Get Bitcoin price
-                double price = cmcApi.getPrice(symbol);
+                double price = CryptoPriceDiscord.getPrice(symbol);
 
                 NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
                 String priceString = formatter.format(price);
+
                 System.out.println((priceString));
                 channel.sendMessage("The closing price of Bitcoin is " + priceString).queue();
             }

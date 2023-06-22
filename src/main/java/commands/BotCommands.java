@@ -3,7 +3,7 @@ package main.java.commands;
 import main.java.audio.PlayCommand;
 import main.java.audio.RandomAudioPlayer;
 import main.java.crypto.BitcoinPriceAlert;
-import main.java.crypto.CryptoPrice;
+import main.java.crypto.CryptoPriceDiscord;
 import main.java.crypto.ScheduledAlert;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
@@ -24,135 +24,136 @@ import java.util.List;
 
 public class BotCommands extends ListenerAdapter {
 
-    private Map<String, ScheduledAlert> scheduledAlertMap = new HashMap<>();
-    private String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
+    private final Map<String, ScheduledAlert> scheduledAlertMap = new HashMap<>();
+    private final String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
 
-    private Member member;
     private int toggle = 0;
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
-
         AudioManager audioManager = null;
-        if (command.equals("test")) {
-            event.reply("test").queue();
 
-
-        } else if (command.equals("crypto-price")) {
-            OptionMapping cryptoOption = event.getOption("crypto-symbol");
-            String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
-
-            System.out.println(cryptoSymbolDiscord);
-
-            CryptoPrice cmcApi = new CryptoPrice(cryptoSymbolDiscord);
-            double price = cmcApi.getPrice(cryptoSymbolDiscord);
-
-            NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
-            String priceString = formatter.format(price);
-            event.reply("Request sent!").setEphemeral(false).queue();
-            event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
-
-        } else if (command.equals("bitcoin-alert-start")) {
-            BitcoinPriceAlert alert = new BitcoinPriceAlert();
-            alert.startAlerts(event.getTextChannel());
-            event.reply("Alert created!").queue();
-
-        } else if (command.equals("bitcoin-alert-stop")) {
-            BitcoinPriceAlert alert = new BitcoinPriceAlert();
-            alert.stopAlerts(event.getTextChannel());
-            event.reply("Alert disabled!").queue();
-
-        } else if (command.equals("bitcoin-scheduled-alert-start")) {
-            ScheduledAlert scheduledAlert = new ScheduledAlert(event.getTextChannel());
-            scheduledAlert.start(LocalTime.of(21, 00));
-            scheduledAlertMap.put(event.getTextChannel().getId(), scheduledAlert);
-            event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
-
-        } else if (command.equals("bitcoin-scheduled-alert-stop")) {
-            ScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getTextChannel().getId());
-            if (scheduledAlert != null) {
-                scheduledAlert.stop();
-                scheduledAlertMap.remove(event.getTextChannel().getId());
-                event.reply("The current scheduled alert has been stopped!").queue();
+        switch (command) {
+            case "test" -> event.reply("test").queue();
+            case "crypto-price" -> {
+                OptionMapping cryptoOption = event.getOption("crypto-symbol");
+                String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
+                System.out.println(cryptoSymbolDiscord);
+                double price = CryptoPriceDiscord.getPrice(cryptoSymbolDiscord);
+                NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
+                String priceString = formatter.format(price);
+                event.reply("Request sent!").setEphemeral(false).queue();
+                event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
             }
-        } else if (command.equals("random-audio-player")) {
-            RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
-            randomAudioPlayer.playRandomAudio();
-            event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
+            case "bitcoin-alert-start" -> {
+                BitcoinPriceAlert alert = new BitcoinPriceAlert();
+                alert.startAlert(event.getTextChannel());
+                event.reply("Alert created!").queue();
 
-        } else if (command.equals("join")) {
-            Member member = event.getMember();
-            Guild guild = event.getGuild();
-            TextChannel channel = event.getTextChannel();
-            GuildVoiceState voiceState = member.getVoiceState();
+            }
+            case "bitcoin-alert-stop" -> {
+                BitcoinPriceAlert alert = new BitcoinPriceAlert();
+                alert.stopAlert(event.getTextChannel());
+                event.reply("Alert disabled!").queue();
 
-            PlayCommand.joinVoiceChannel(channel, voiceState, guild);
+            }
+            case "bitcoin-scheduled-alert-start" -> {
+                ScheduledAlert scheduledAlert = new ScheduledAlert(event.getTextChannel());
+                scheduledAlert.start(LocalTime.of(21, 0));
+                scheduledAlertMap.put(event.getTextChannel().getId(), scheduledAlert);
+                event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
 
-            event.reply("Joining voice channel").setEphemeral(true).queue();
+            }
+            case "bitcoin-scheduled-alert-stop" -> {
+                ScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getTextChannel().getId());
+                if (scheduledAlert != null) {
+                    scheduledAlert.stop();
+                    scheduledAlertMap.remove(event.getTextChannel().getId());
+                    event.reply("The current scheduled alert has been stopped!").queue();
+                }
+            }
+            case "random-audio-player" -> {
+                RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
+                randomAudioPlayer.playRandomAudio();
+                event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
+            }
+            case "join" -> {
+                Member member = event.getMember();
+                Guild guild = event.getGuild();
+                TextChannel channel = event.getTextChannel();
+                GuildVoiceState voiceState = member.getVoiceState();
 
-        } else if (command.equals("play")) {
-            OptionMapping songOption = event.getOption("song_search_or_link");
-            String songUrl = songOption.getAsString();
-            System.out.println(songUrl);
+                PlayCommand.joinVoiceChannel(channel, voiceState, guild);
 
-            TextChannel channel = event.getTextChannel();
-            Member member = event.getMember();
-            GuildVoiceState voiceState = member.getVoiceState();
-            member.getVoiceState();
+                event.reply("Joining voice channel").setEphemeral(true).queue();
 
-            event.reply("Adding song!").setEphemeral(true).queue();
+            }
+            case "play" -> {
+                OptionMapping songOption = event.getOption("song_search_or_link");
+                String songUrl = songOption.getAsString();
+                System.out.println(songUrl);
+
+                TextChannel channel = event.getTextChannel();
+                Member member = event.getMember();
+                GuildVoiceState voiceState = member.getVoiceState();
+                member.getVoiceState();
+
+                event.reply("Adding song!").setEphemeral(true).queue();
 
 
-            PlayCommand playCommand = new PlayCommand(songUrl);
-            playCommand.Play(channel, member, voiceState);
-            playCommand.handle(channel);
+                PlayCommand playCommand = new PlayCommand(songUrl);
+                playCommand.Play(channel, member, voiceState);
+                playCommand.handle(channel);
 
-            VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
-            if (!audioChannel.getGuild().getAudioManager().isConnected()) {
-                audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
+                VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
+                if (!audioChannel.getGuild().getAudioManager().isConnected()) {
+                    audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
+                }
+            }
+            case "playlist-link" -> {
+                OptionMapping playlistOption = event.getOption("playlist_link");
+
+                List<String> urls = new ArrayList<>(Collections.singletonList(playlistOption.getAsString()));
+                System.out.println(urls);
+
+                TextChannel channel = event.getTextChannel();
+                Member member = event.getMember();
+                GuildVoiceState voiceState = member.getVoiceState();
+                member.getVoiceState();
+
+                event.reply("Adding playlist!").setEphemeral(true).queue();
+
+                PlayCommand playCommand = new PlayCommand(urls);
+                playCommand.Play(channel, member, voiceState);
+                PlayCommand.addPlaylist(event.getTextChannel(), event.getGuild(), urls);
+                playCommand.handle(channel);
+
+            }
+            case "skip" -> {
+                PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
+                event.reply("Skipped to next track").setEphemeral(true).queue();
+            }
+            case "leave" -> {
+                PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
+                event.reply("Left the voice channel").setEphemeral(true).queue();
+            }
+            case "stop" -> {
+                PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
+                event.reply("Stopped the queue").setEphemeral(true).queue();
+            }
+            case "loop" -> {
+                PlayCommand.loopTrack(event.getGuild());
+                toggle += 1;
+                switch (toggle) {
+                    case 1 -> event.reply("Loop is on!").queue();
+                    case 2 -> {
+                        event.reply("Loop is off!").queue();
+                        toggle = 0;
+                    }
+                }
             }
         }
-
-        else if (command.equals("playlist-link")){
-            OptionMapping playlistOption = event.getOption("playlist_link");
-
-            List<String> urls = new ArrayList<>(Collections.singletonList(playlistOption.getAsString()));
-            System.out.println(urls);
-
-            TextChannel channel = event.getTextChannel();
-            Member member = event.getMember();
-            GuildVoiceState voiceState = member.getVoiceState();
-            member.getVoiceState();
-
-            event.reply("Adding playlist!").setEphemeral(true).queue();
-
-            PlayCommand playCommand = new PlayCommand(urls);
-            playCommand.Play(channel,member,voiceState);
-            PlayCommand.addPlaylist(event.getTextChannel(), event.getGuild(), urls);
-            playCommand.handle(channel);
-
-        } else if (command.equals("skip")) {
-            PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
-            event.reply("Skipped to next track").setEphemeral(true).queue();
-        } else if (command.equals("leave")) {
-            PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
-            event.reply("Left the voice channel").setEphemeral(true).queue();
-        } else if (command.equals("stop")) {
-            PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
-            event.reply("Stopped the queue").setEphemeral(true).queue();
-        } else if(command.equals("loop")){
-        PlayCommand.loopTrack(event.getGuild());
-        toggle += 1;
-        switch (toggle) {
-            case 1 -> event.reply("Loop is on!").queue();
-            case 2 -> {
-                event.reply("Loop is off!").queue();
-                toggle = 0;
-            }
-        }
-
-    }
 
     }
 

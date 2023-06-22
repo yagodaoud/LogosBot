@@ -9,8 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage on a certain timeframe
 
 
-    private static final String BTC_SYMBOL = "BTC"; //Set the crypto symbol you want
-    private static final String apiKey = "e77bacb5-8443-4bc7-8f5b-e0e26b497abd";
+    private static final String BTC_SYMBOL = "BTC";
     private static final double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
 
     private static final double THRESHOLD = 0.01; //Same as above
@@ -20,22 +19,20 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private double lastPrice;
 
-    public String getApiKey() {
-        return apiKey.toString();
-    } //Api key getter from .env (not working right now)
-
-    public BitcoinPriceAlert() { //Build CryptoPrice to get the price of Bitcoin to compare further down
-        CryptoPrice api = new CryptoPrice(apiKey);
-        lastPrice = api.getPrice(BTC_SYMBOL);
-        System.out.println("Last price:" + lastPrice); //The price variation will start at 0, because current price and last price will be the same (just for the start)
+    public BitcoinPriceAlert() {
+        lastPrice = ApiConnection.getPrice(BTC_SYMBOL);
+        System.out.println("Last price:" + lastPrice);
     }
 
-    public void startAlerts(TextChannel channel) { //Call method from BotCommands
+    public void startAlert(TextChannel channel) {
         System.out.println("started");
         executorService.scheduleAtFixedRate(() -> {
-            CryptoPrice api = new CryptoPrice(apiKey); //Build the variable to be stored as currentPrice to compare with lastPrice
-            double currentPrice = api.getPrice(BTC_SYMBOL);
-            double variation = (currentPrice - lastPrice) / lastPrice; //Formula to get the variation e.g. The price was 100, now it's 120 -> (120 - 100) / 100 = 0.2 * 100 = 20%
+            double currentPrice = ApiConnection.getPrice(BTC_SYMBOL);
+            double variation = (currentPrice - lastPrice) / lastPrice;
+            /*Formula to get the
+              variation e.g. The price was 100,
+              now it's 120 -> (120 - 100) / 100 = 0.2 * 100 = 20%
+             */
             System.out.println("Current price is " + currentPrice);
             System.out.println("Variation is: " + String.format("%.2f%%", variation * 100));
             if (Math.abs(variation) >= VARIATION_THRESHOLD) { //Checks if it's an uptrend or downtrend
@@ -52,7 +49,7 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
         }, 0, ALERT_INTERVAL, TimeUnit.SECONDS);
     }
 
-    public void stopAlerts(TextChannel channel) { //Stopping the alert
+    public void stopAlert(TextChannel channel) {
         executorService.shutdown();
         System.out.println("stopped");
     }
