@@ -10,12 +10,11 @@ import java.net.URL;
 
 public class CryptoPrice { //Api connection and price getter class
     public String cryptoSymbol;
-    private final Dotenv config;
-    private String token;
+    private final String token;
 
     public CryptoPrice(String cryptoSymbol) {
         this.cryptoSymbol = cryptoSymbol;
-        config = Dotenv.configure().load();
+        Dotenv config = Dotenv.configure().load();
         this.token = config.get("TOKENCMC");
 
     }
@@ -25,8 +24,7 @@ public class CryptoPrice { //Api connection and price getter class
 
     public double getPrice(String symbol) { //Coin symbol input from discord as argument
         try {
-            String symbolCrypto = symbol;
-            URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbolCrypto); //Symbol is passed as url Id for the coin wanted
+            URL url = new URL("https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=" + symbol); //Symbol is passed as url id for the coin wanted
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("X-CMC_Pro_API_Key", token); //Make the connection
@@ -43,11 +41,10 @@ public class CryptoPrice { //Api connection and price getter class
 
                 JSONObject json = new JSONObject(response.toString());
                 JSONObject symbolData = json.getJSONObject("data")
-                        .getJSONObject(symbolCrypto)
+                        .getJSONObject(symbol)
                         .getJSONObject("quote")
                         .getJSONObject("USD");
-                double price = symbolData.getDouble("price"); //Get price from api url and return it to de displayed in BotCommands class
-                return price;
+                return symbolData.getDouble("price");
             } else {
                 System.err.println("Failed to fetch data, status code: " + status);
                 return 0.0;
