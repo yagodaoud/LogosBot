@@ -10,7 +10,8 @@ In order to add the bot you:
 
 The following permissions are required:
 
-![image](https://github.com/yagodaoud/discordBot/assets/104167181/79bb13a1-bbf7-4295-8006-70b868009996)
+![image](https://github.com/yagodaoud/discordBot/assets/104167181/db2c8941-2a3a-49d9-a166-2723a67f90d9)
+
 
 
 
