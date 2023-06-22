@@ -16,7 +16,7 @@ public class CryptoPrice { //Api connection and price getter class
     public CryptoPrice(String cryptoSymbol) {
         this.cryptoSymbol = cryptoSymbol;
         config = Dotenv.configure().load();
-        String token = config.get("TOKENCMC");
+        this.token = config.get("TOKENCMC");
 
     }
 
