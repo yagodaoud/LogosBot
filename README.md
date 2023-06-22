@@ -26,7 +26,7 @@ The following permissions are required:
 - Play (search name or link)
 - Skip
 - Stop 
-- Loop (not done yet)
+- Loop 
 - Leave
 
 ### Invitation link
