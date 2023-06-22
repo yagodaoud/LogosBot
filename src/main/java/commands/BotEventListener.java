@@ -51,7 +51,6 @@ public class BotEventListener extends ListenerAdapter implements BotStatusObserv
 
     @Override
     public void onUserUpdateOnlineStatus(@NotNull UserUpdateOnlineStatusEvent event) {
-        System.out.println("test 1");
 
         onlineStatusEvent = event;
         int onlineMembers = getQuantityOnlineMembers();
@@ -61,19 +60,18 @@ public class BotEventListener extends ListenerAdapter implements BotStatusObserv
     }
 
     public int getQuantityOnlineMembers() {
-        System.out.println("test 2");
         if (onlineStatusEvent == null) {
             return 0;
         }
-        System.out.println("test 3");
         Guild guild = onlineStatusEvent.getJDA().getGuildById(guildId);
         assert guild != null;
         List<Member> members = guild.getMembers();
         int onlineMembers = 0;
         for (Member member : members) {
-            if (member.getOnlineStatus() == OnlineStatus.ONLINE) {
-                onlineMembers++;
-                System.out.println(onlineMembers);
+            if (!member.getUser().isBot()) {
+                if (member.getOnlineStatus() == OnlineStatus.ONLINE || member.getOnlineStatus() == OnlineStatus.DO_NOT_DISTURB) {
+                    onlineMembers++;
+                }
             }
         }
         return onlineMembers;
