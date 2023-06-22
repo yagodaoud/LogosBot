@@ -28,6 +28,7 @@ public class BotCommands extends ListenerAdapter {
     private String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
 
     private Member member;
+    private int toggle = 0;
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -111,7 +112,9 @@ public class BotCommands extends ListenerAdapter {
             if (!audioChannel.getGuild().getAudioManager().isConnected()) {
                 audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
             }
-        } else if (command.equals("playlist-link")){
+        }
+
+        else if (command.equals("playlist-link")){
             OptionMapping playlistOption = event.getOption("playlist_link");
 
             List<String> urls = new ArrayList<>(Collections.singletonList(playlistOption.getAsString()));
@@ -138,19 +141,19 @@ public class BotCommands extends ListenerAdapter {
         } else if (command.equals("stop")) {
             PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
             event.reply("Stopped the queue").setEphemeral(true).queue();
-        }  else if (command.equals("loop")) {
-            int counter = 0;
-        PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
-            if (counter == 0) {
-                event.reply("Looping is on").setEphemeral(true).queue();
-                counter = 1;
+        } else if(command.equals("loop")){
+        PlayCommand.loopTrack(event.getGuild());
+        toggle += 1;
+        switch (toggle) {
+            case 1 -> event.reply("Loop is on!").queue();
+            case 2 -> {
+                event.reply("Loop is off!").queue();
+                toggle = 0;
             }
-            if (counter == 1){
-                event.reply("Looping is off").setEphemeral(true).queue();
-                counter = 0;
-            }
+        }
 
     }
+
     }
 
 
@@ -179,6 +182,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("skip", "Skips to next track"));
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
         commandData.add(Commands.slash("stop", "Stops the track and clears the queue"));
+        commandData.add(Commands.slash("loop", "Loops through the queue"));
         commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();

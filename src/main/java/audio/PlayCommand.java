@@ -14,6 +14,7 @@ public class PlayCommand {
     public String url;
     private static boolean joined;
     private static int counter;
+    private static int toggleRepeat = 0;
 
     private List<String> urls = new ArrayList<>();
 
@@ -42,6 +43,7 @@ public class PlayCommand {
         return null;
 
     }
+
     public static void addPlaylist(TextChannel channel, Guild guild, List<String> urls) {
         new PlayerManager().loadPlaylist(channel, urls.toString());
 
@@ -52,6 +54,16 @@ public class PlayCommand {
         }
     }
 
+    public static void loopTrack(Guild guild) {
+        toggleRepeat += 1;
+        final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
+        if (toggleRepeat == 1) {
+            musicManager.scheduler.setRepeat(true);
+        } else if (toggleRepeat == 2){
+            musicManager.scheduler.setRepeat(false);
+            toggleRepeat = 0;
+        }
+    }
 
 
     public static void joinVoiceChannel(TextChannel channel, GuildVoiceState voiceState, Guild guild) {

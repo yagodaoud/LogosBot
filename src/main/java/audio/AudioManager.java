@@ -18,4 +18,12 @@ public class AudioManager {
     public AudioPlayerSendHandler getSendHandler() {
         return sendHandler;
     }
+
+    public static AudioManager getObject(Class<AudioManager> clazz) throws InstantiationException, IllegalAccessException {
+        try {
+            return clazz.newInstance();
+        } catch (Exception e) {
+
+        } return null;
+    }
 }
