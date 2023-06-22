@@ -9,7 +9,6 @@ public class InsertUser {
     public static void insertUsers() throws SQLException {
         Connection connector = MySQLConnector.getConnection();
         List<String> userList = UserListGetter.membersValue();
-        System.out.println(userList);
 
         String sql = "INSERT INTO users (user_name) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM users WHERE user_name = ?)";
 
