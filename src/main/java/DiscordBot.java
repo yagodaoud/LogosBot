@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 import java.sql.SQLException;
@@ -74,7 +75,7 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     @Override
-    public void onReady(ReadyEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         System.out.println("Bot is ready!");
         members = getMembers();
         try {
@@ -82,8 +83,6 @@ public class DiscordBot extends ListenerAdapter {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     public static List<Member> getMembers() {
