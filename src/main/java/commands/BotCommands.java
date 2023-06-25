@@ -47,7 +47,9 @@ public class BotCommands extends ListenerAdapter {
                 event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
             }
             case "bitcoin-alert-start" -> {
-                BitcoinPriceAlert alert = new BitcoinPriceAlert();
+                double thresholdPercentage = event.getOption("percentage").getAsDouble();
+                double finalPercentage = thresholdPercentage/100;
+                BitcoinPriceAlert alert = new BitcoinPriceAlert(finalPercentage);
                 alert.startAlert(event.getTextChannel());
                 event.reply("Alert created!").queue();
 
@@ -168,7 +170,8 @@ public class BotCommands extends ListenerAdapter {
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
         commandData.add(Commands.slash("crypto-price", "Get the price of a crypto").addOptions(cryptoTag));
 
-        commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin"));
+        OptionData threshold = new OptionData(OptionType.STRING, "percentage", "Percentage that will trigger the alert (in %)", true);
+        commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin").addOptions(threshold));
         commandData.add(Commands.slash("bitcoin-alert-stop", "Disable previous tracker for Bitcoin"));
 
         commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));

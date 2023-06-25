@@ -11,9 +11,9 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
 
 
     private static final String BTC_SYMBOL = "BTC";
-    private static final double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
+    private static double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
 
-    private static final double THRESHOLD = 0.01;
+    private static double THRESHOLD = 0.01;
     private static final long ALERT_INTERVAL= 3600; //Set the time frame in seconds
     private boolean alerted;
     private double lastPrice;
@@ -23,7 +23,12 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
 
 
     public BitcoinPriceAlert(){
+    }
+
+    public BitcoinPriceAlert(double percentage){
         lastPrice = BitcoinPriceGetter();
+        THRESHOLD = percentage;
+        VARIATION_THRESHOLD = percentage;
     }
     public double BitcoinPriceGetter() {
         return ApiConnection.getPrice(BTC_SYMBOL);
