@@ -25,7 +25,7 @@ import java.util.List;
 public class BotCommands extends ListenerAdapter {
 
     private final Map<String, ScheduledAlert> scheduledAlertMap = new HashMap<>();
-    private final String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
+    //private final String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
 
     private int toggle = 0;
 
@@ -47,7 +47,7 @@ public class BotCommands extends ListenerAdapter {
                 event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
             }
             case "bitcoin-alert-start" -> {
-                double thresholdPercentage = event.getOption("percentage").getAsDouble();
+                double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
                 double finalPercentage = thresholdPercentage/100;
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(finalPercentage);
                 alert.startAlert(event.getTextChannel());
@@ -56,7 +56,7 @@ public class BotCommands extends ListenerAdapter {
             }
             case "bitcoin-alert-stop" -> {
                 BitcoinPriceAlert alert = new BitcoinPriceAlert();
-                alert.stopAlert(event.getTextChannel());
+                alert.stopAlert();
                 event.reply("Alert disabled!").queue();
 
             }
@@ -180,8 +180,10 @@ public class BotCommands extends ListenerAdapter {
 
         OptionData songUrl = new OptionData(OptionType.STRING, "song_search_or_link", "Enter the song search or url", true);
         commandData.add(Commands.slash("play", "Plays a song").addOptions(songUrl));
+
         OptionData playlistOption = new OptionData(OptionType.STRING, "playlist_link", "Enter the playlist link", true);
         commandData.add(Commands.slash("playlist-link", "Load and play a playlist from Youtube").addOptions(playlistOption));
+
         commandData.add(Commands.slash("join", "The bot will join the current channel"));
         commandData.add(Commands.slash("skip", "Skips to next track"));
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));

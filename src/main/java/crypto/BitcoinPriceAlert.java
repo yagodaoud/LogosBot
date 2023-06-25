@@ -67,7 +67,7 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
     }
 
 
-    public void stopAlert(TextChannel channel) {
+    public void stopAlert() {
         executorService.shutdown();
         System.out.println("stopped");
     }
