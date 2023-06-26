@@ -3,6 +3,7 @@ package main.java.commands;
 import main.java.audio.PlayCommand;
 import main.java.audio.RandomAudioPlayer;
 import main.java.crypto.BitcoinPriceAlert;
+import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.CryptoPriceDiscord;
 import main.java.crypto.ScheduledAlert;
 import net.dv8tion.jda.api.entities.*;
@@ -74,6 +75,13 @@ public class BotCommands extends ListenerAdapter {
                     scheduledAlertMap.remove(event.getTextChannel().getId());
                     event.reply("The current scheduled alert has been stopped!").queue();
                 }
+            }
+            case "bitcoin-price-trigger" -> {
+                double targetPrice = Objects.requireNonNull(event.getOption("target-price")).getAsDouble();
+                BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
+                bitcoinPriceTrigger.setPriceForNotification(event.getTextChannel(), event.getUser().getId());
+                event.reply("Monitoring Bitcoin price!").queue();
+
             }
             case "random-audio-player" -> {
                 RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
@@ -177,6 +185,8 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
+        OptionData targetPrice = new OptionData(OptionType.STRING, "target-price", "Target Price desired", true);
+        commandData.add(Commands.slash("bitcoin-price-trigger", "Bitcoin Price tracker, if the value is reached, the bot will send a notification").addOptions(targetPrice));
 
         OptionData songUrl = new OptionData(OptionType.STRING, "song_search_or_link", "Enter the song search or url", true);
         commandData.add(Commands.slash("play", "Plays a song").addOptions(songUrl));
