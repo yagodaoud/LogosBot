@@ -26,6 +26,7 @@ public class BitcoinPriceTrigger {
             if (targetPrice == priceNow) {
                 String message = String.format("Bitcoin has reached $%.2f <@%s>!", targetPrice, id);
                 channel.sendMessage(message).queue();
+                System.out.println(message);
                 executorService.shutdown();
             }
         },0, ALERT_INTERVAL, TimeUnit.SECONDS);
