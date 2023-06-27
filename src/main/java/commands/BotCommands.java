@@ -34,6 +34,7 @@ public class BotCommands extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
         AudioManager audioManager = null;
+        Locale locale = Locale.US;
 
         switch (command) {
             case "test" -> event.reply("test").queue();
@@ -80,7 +81,7 @@ public class BotCommands extends ListenerAdapter {
                 double targetPrice = Objects.requireNonNull(event.getOption("target-price")).getAsDouble();
                 BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
                 bitcoinPriceTrigger.setPriceForNotification(event.getTextChannel(), event.getUser().getId());
-                event.reply("Monitoring Bitcoin price!").queue();
+                event.reply(String.format(locale,"Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
 
             }
             case "random-audio-player" -> {
