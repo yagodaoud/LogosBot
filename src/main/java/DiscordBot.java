@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import main.java.commands.BotCommands;
 import main.java.commands.BotEventListener;
 import main.java.commands.CustomActivity;
+import main.java.crypto.BitcoinGeneralPriceScheduler;
 import main.java.db.InsertUser;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;

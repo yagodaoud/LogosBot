@@ -11,10 +11,9 @@ public class BitcoinGeneralPriceScheduler {
     private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
     private static final long ALERT_INTERVAL= 600;
 
-    public BitcoinGeneralPriceScheduler(){
+    static {
         btcPrice = CryptoPriceDiscord.getPrice(btc);
     }
-
     public static double getBtcPrice() {
         return btcPrice;
     }
