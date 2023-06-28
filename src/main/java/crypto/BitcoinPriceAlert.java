@@ -9,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 
 public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage on a certain timeframe
 
-
-    private static final String BTC_SYMBOL = "BTC";
     private static double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
 
     private static double THRESHOLD = 0.01;
@@ -31,7 +29,7 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
         VARIATION_THRESHOLD = percentage;
     }
     public double BitcoinPriceGetter() {
-        return ApiConnection.getPrice(BTC_SYMBOL);
+        return BitcoinGeneralPriceScheduler.getBtcPrice();
     }
 
     public void startAlert(TextChannel channel) {

@@ -4,8 +4,8 @@ import main.java.audio.PlayCommand;
 import main.java.audio.RandomAudioPlayer;
 import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.BitcoinPriceTrigger;
+import main.java.crypto.BitcoinScheduledAlert;
 import main.java.crypto.CryptoPriceDiscord;
-import main.java.crypto.ScheduledAlert;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -25,7 +25,7 @@ import java.util.List;
 
 public class BotCommands extends ListenerAdapter {
 
-    private final Map<String, ScheduledAlert> scheduledAlertMap = new HashMap<>();
+    private final Map<String, BitcoinScheduledAlert> scheduledAlertMap = new HashMap<>();
     //private final String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
 
     private int toggle = 0;
@@ -53,7 +53,8 @@ public class BotCommands extends ListenerAdapter {
                 double finalPercentage = thresholdPercentage/100;
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(finalPercentage);
                 alert.startAlert(event.getTextChannel());
-                event.reply("Alert created!").queue();
+                String message = String.format("Alert created! Threshold is %s%%.", thresholdPercentage);
+                event.reply(message).queue();
 
             }
             case "bitcoin-alert-stop" -> {
@@ -63,14 +64,14 @@ public class BotCommands extends ListenerAdapter {
 
             }
             case "bitcoin-scheduled-alert-start" -> {
-                ScheduledAlert scheduledAlert = new ScheduledAlert(event.getTextChannel());
+                BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(event.getTextChannel());
                 scheduledAlert.start(LocalTime.of(21, 0));
                 scheduledAlertMap.put(event.getTextChannel().getId(), scheduledAlert);
                 event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
 
             }
             case "bitcoin-scheduled-alert-stop" -> {
-                ScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getTextChannel().getId());
+                BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getTextChannel().getId());
                 if (scheduledAlert != null) {
                     scheduledAlert.stop();
                     scheduledAlertMap.remove(event.getTextChannel().getId());

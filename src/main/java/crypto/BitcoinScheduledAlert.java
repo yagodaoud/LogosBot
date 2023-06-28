@@ -13,13 +13,13 @@ import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT [9 pm BRT])
+public class BitcoinScheduledAlert { //Bitcoin update at every candle close (12 am GMT [9 pm BRT])
     private final Timer timer;
     private TimerTask task;
     private final TextChannel channel;
     private final String symbol;
 
-    public ScheduledAlert(TextChannel channel) {
+    public BitcoinScheduledAlert(TextChannel channel) {
         this.channel = channel;
         this.symbol = "BTC";
         this.timer = new Timer();
@@ -34,7 +34,7 @@ public class ScheduledAlert { //Bitcoin update at every candle close (12 am GMT 
             @Override
             public void run() {
                 System.out.println("Started");
-                double price = CryptoPriceDiscord.getPrice(symbol);
+                double price = BitcoinGeneralPriceScheduler.getBtcPrice();
 
                 NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
                 String priceString = formatter.format(price);
