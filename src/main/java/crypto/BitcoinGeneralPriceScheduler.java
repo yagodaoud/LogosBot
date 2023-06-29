@@ -9,17 +9,17 @@ public class BitcoinGeneralPriceScheduler {
     private static final String btc = "BTC";
     private static double btcPrice;
     private static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private static final long ALERT_INTERVAL= 600;
+    private static final long ALERT_INTERVAL= 3600;
 
     static {
         btcPrice = CryptoPriceDiscord.getPrice(btc);
+        getBtcPriceEveryTenMinutes();
     }
     public static double getBtcPrice() {
         return btcPrice;
     }
 
-    public static double getBtcPriceEveryTenMinutes(){
+    public static void getBtcPriceEveryTenMinutes(){
         executorService.scheduleAtFixedRate(() -> btcPrice = CryptoPriceDiscord.getPrice(btc), 0, ALERT_INTERVAL, TimeUnit.SECONDS);
-        return btcPrice;
     }
 }
