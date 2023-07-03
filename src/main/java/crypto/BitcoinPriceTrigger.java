@@ -10,12 +10,9 @@ import java.util.concurrent.TimeUnit;
 public class BitcoinPriceTrigger {
 
     private final double targetPrice;
-    private final String btc = "BTC";
     private final int priceTrendDesired;  //1 for uptrend, 0 for downtrend
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-    private static final long ALERT_INTERVAL= 600;
     private final Locale locale = Locale.US;
-
 
     public BitcoinPriceTrigger(Double price){
         this.targetPrice = price;
@@ -29,6 +26,7 @@ public class BitcoinPriceTrigger {
 
 
     public void setPriceForNotification(TextChannel channel, String id) {
+        long ALERT_INTERVAL = 600;
         executorService.scheduleAtFixedRate(() -> {
             System.out.println("start here");
             double priceNow = BitcoinGeneralPriceScheduler.getBtcPrice();

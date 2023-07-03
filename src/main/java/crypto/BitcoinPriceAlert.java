@@ -32,21 +32,26 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
         return BitcoinGeneralPriceScheduler.getBtcPrice();
     }
 
+   public double priceVariationCalculator(double currentPrice, double lastPrice){
+        /*Formula to get the
+          variation e.g. The price was 100,
+          now it's 120 -> (120 - 100) / 100 = 0.2 * 100 = 20%
+        */
+       return ((currentPrice - lastPrice) / lastPrice) * 100;
+    }
+
     public void startAlert(TextChannel channel) {
         System.out.println("started");
         executorService.scheduleAtFixedRate(() -> {
 
             double currentPrice = BitcoinPriceGetter();
-            double variation = (currentPrice - lastPrice) / lastPrice;
+            double variation = priceVariationCalculator(currentPrice, lastPrice);
 
-              /*Formula to get the
-              variation e.g. The price was 100,
-              now it's 120 -> (120 - 100) / 100 = 0.2 * 100 = 20%
-             */
+
 
             System.out.println(variation);
             System.out.println("Current price is " + currentPrice);
-            System.out.println("Variation is: " + String.format("%.2f%%", variation * 100));
+            System.out.println("Variation is: " + String.format("%.2f%%", variation));
 
             if (Math.abs(variation) >= VARIATION_THRESHOLD) {
                 String direction = variation > 0 ? "up" : "down";

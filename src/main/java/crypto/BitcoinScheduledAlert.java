@@ -17,11 +17,9 @@ public class BitcoinScheduledAlert { //Bitcoin update at every candle close (12 
     private final Timer timer;
     private TimerTask task;
     private final TextChannel channel;
-    private final String symbol;
 
     public BitcoinScheduledAlert(TextChannel channel) {
         this.channel = channel;
-        this.symbol = "BTC";
         this.timer = new Timer();
     }
 
