@@ -29,7 +29,6 @@ public class JDATest {
 
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        Mockito.when(CryptoPriceDiscord.getPrice(Mockito.anyString())).thenReturn(100.0);
     }
 
     @Test
@@ -37,6 +36,7 @@ public class JDATest {
         setup();
         beforeEach();
         BotCommands botCommands = new BotCommands();
+        Mockito.when(CryptoPriceDiscord.getPrice(Mockito.anyString())).thenReturn(100.0);
         botCommands.onSlashCommandInteraction(slashEvent);
         CryptoPriceDiscord.getPrice("BTC");
 
