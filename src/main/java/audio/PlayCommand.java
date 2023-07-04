@@ -4,7 +4,6 @@ import net.dv8tion.jda.api.entities.*;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PlayCommand {
@@ -30,17 +29,13 @@ public class PlayCommand {
         this.voiceState = voiceState;
     }
 
-    public static PlayCommand skipTrack(TextChannel channel, Guild guild) {
+    public static void skipTrack(TextChannel channel, Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         musicManager.scheduler.nextTrack();
-        channel.sendMessage("Skipped the current song").queue();
-        return null;
     }
-    public static PlayCommand stopCommand(TextChannel channel, Guild guild) {
+    public static void stopCommand(TextChannel channel, Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         PlayerManager.stopAndClear(musicManager.audioPlayer);
-        channel.sendMessage("Stopped and cleared the queue").queue();
-        return null;
 
     }
 
@@ -101,7 +96,6 @@ public class PlayCommand {
         final AudioChannel connectedChannel = guild.getSelfMember().getVoiceState().getChannel();
         if (connectedChannel != null) {
             connectedChannel.getGuild().getAudioManager().closeAudioConnection();
-            channel.sendMessage("Left the voice channel").queue();
             joined = false;
         } else {
             channel.sendMessage("Not connected to a voice channel.").queue();

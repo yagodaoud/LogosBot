@@ -98,7 +98,7 @@ public class BotCommands extends ListenerAdapter {
 
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
 
-                event.reply("Joining voice channel").setEphemeral(true).queue();
+                event.reply("Joining voice channel").setEphemeral(false).queue();
 
             }
             case "play" -> {
@@ -111,7 +111,7 @@ public class BotCommands extends ListenerAdapter {
                 GuildVoiceState voiceState = member.getVoiceState();
                 member.getVoiceState();
 
-                event.reply("Adding song!").setEphemeral(true).queue();
+                event.reply("Adding song!").setEphemeral(false).queue();
 
 
                 PlayCommand playCommand = new PlayCommand(songUrl);
@@ -134,7 +134,7 @@ public class BotCommands extends ListenerAdapter {
                 GuildVoiceState voiceState = member.getVoiceState();
                 member.getVoiceState();
 
-                event.reply("Adding playlist!").setEphemeral(true).queue();
+                event.reply("Adding playlist!").setEphemeral(false).queue();
 
                 PlayCommand playCommand = new PlayCommand(urls);
                 playCommand.Play(channel, member, voiceState);
@@ -144,15 +144,15 @@ public class BotCommands extends ListenerAdapter {
             }
             case "skip" -> {
                 PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
-                event.reply("Skipped to next track").setEphemeral(true).queue();
+                event.reply("Skipped to next track").setEphemeral(false).queue();
             }
             case "leave" -> {
                 PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
-                event.reply("Left the voice channel").setEphemeral(true).queue();
+                event.reply("Left the voice channel").setEphemeral(false).queue();
             }
             case "stop" -> {
                 PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
-                event.reply("Stopped the queue").setEphemeral(true).queue();
+                event.reply("Stopped and cleared the queue").setEphemeral(true).queue();
             }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
