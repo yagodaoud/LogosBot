@@ -57,7 +57,7 @@ public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage o
                 String direction = variation > 0 ? "up" : "down";
                 String emoji = variation > 0 ? "📈" : "📉";
                 String priceString = "$" + priceFormatter.format(currentPrice);
-                String variationString = String.format("%.2f%%", variation * 100);
+                String variationString = String.format("%.2f%%", variation);
                 String bitcoinAlert = "Bitcoin is " + direction + "! " + priceString +
                         " (" + variationString + " in the last hour) " + emoji;
                 channel.sendMessage(bitcoinAlert).queue();
