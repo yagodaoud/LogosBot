@@ -85,11 +85,11 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(String.format(locale,"Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
 
             }
-            case "random-audio-player" -> {
-                RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
-                randomAudioPlayer.playRandomAudio();
-                event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
-            }
+//            case "random-audio-player" -> {
+//                RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
+//                randomAudioPlayer.playRandomAudio();
+//                event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
+//            }
             case "join" -> {
                 Member member = event.getMember();
                 Guild guild = event.getGuild();
@@ -97,8 +97,6 @@ public class BotCommands extends ListenerAdapter {
                 GuildVoiceState voiceState = member.getVoiceState();
 
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
-
-                event.reply("Joining voice channel").setEphemeral(false).queue();
 
             }
             case "play" -> {
@@ -115,7 +113,7 @@ public class BotCommands extends ListenerAdapter {
 
 
                 PlayCommand playCommand = new PlayCommand(songUrl);
-                playCommand.Play(channel, member, voiceState);
+                playCommand.Play(member, voiceState);
                 playCommand.handle(channel);
 
                 VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
@@ -126,24 +124,22 @@ public class BotCommands extends ListenerAdapter {
             case "playlist-link" -> {
                 OptionMapping playlistOption = event.getOption("playlist_link");
 
-                List<String> urls = new ArrayList<>(Collections.singletonList(playlistOption.getAsString()));
+                String urls = playlistOption.getAsString();
                 System.out.println(urls);
 
                 TextChannel channel = event.getTextChannel();
                 Member member = event.getMember();
                 GuildVoiceState voiceState = member.getVoiceState();
-                member.getVoiceState();
 
                 event.reply("Adding playlist!").setEphemeral(false).queue();
 
                 PlayCommand playCommand = new PlayCommand(urls);
-                playCommand.Play(channel, member, voiceState);
-                PlayCommand.addPlaylist(event.getTextChannel(), event.getGuild(), urls);
+                playCommand.Play(member, voiceState);
                 playCommand.handle(channel);
 
             }
             case "skip" -> {
-                PlayCommand.skipTrack(event.getTextChannel(), event.getGuild());
+                PlayCommand.skipTrack(event.getGuild());
                 event.reply("Skipped to next track").setEphemeral(false).queue();
             }
             case "leave" -> {
@@ -151,8 +147,8 @@ public class BotCommands extends ListenerAdapter {
                 event.reply("Left the voice channel").setEphemeral(false).queue();
             }
             case "stop" -> {
-                PlayCommand.stopCommand(event.getTextChannel(), event.getGuild());
-                event.reply("Stopped and cleared the queue").setEphemeral(true).queue();
+                PlayCommand.stopCommand(event.getGuild());
+                event.reply("Stopped and cleared the queue").setEphemeral(false).queue();
             }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
@@ -201,7 +197,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
         commandData.add(Commands.slash("stop", "Stops the track and clears the queue"));
         commandData.add(Commands.slash("loop", "Loops through the queue"));
-        commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
+//        commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }

@@ -15,38 +15,24 @@ public class PlayCommand {
     private static int counter;
     private static int toggleRepeat = 0;
 
-    private List<String> urls = new ArrayList<>();
 
     public PlayCommand(String url) {
         this.url = url;
     }
-    public PlayCommand(List<String> urls) {
-        this.urls = urls;
-    }
 
-    public void Play(TextChannel channel, Member member, GuildVoiceState voiceState) {
+    public void Play (Member member, GuildVoiceState voiceState) {
         this.member = member;
         this.voiceState = voiceState;
     }
 
-    public static void skipTrack(TextChannel channel, Guild guild) {
+    public static void skipTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         musicManager.scheduler.nextTrack();
     }
-    public static void stopCommand(TextChannel channel, Guild guild) {
+    public static void stopCommand(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         PlayerManager.stopAndClear(musicManager.audioPlayer);
 
-    }
-
-    public static void addPlaylist(TextChannel channel, Guild guild, List<String> urls) {
-        new PlayerManager().loadPlaylist(channel, urls.toString());
-
-        for(String url : urls){
-        PlayCommand playCommand = new PlayCommand(url);
-        playCommand.Play(channel, guild.getSelfMember(), guild.getSelfMember().getVoiceState());
-        playCommand.handle(channel);
-        }
     }
 
     public static void loopTrack(Guild guild) {
@@ -120,15 +106,17 @@ public class PlayCommand {
             return;
         }
 
-        String link = String.join(" ", url);
 
-        if (!isUrl(link) || !link.startsWith("https://www.youtube.com/playlist")) {
-            link = "ytsearch:" + link;
-        }
-        if (link.startsWith("https://www.youtube.com/playlist")) {
-            PlayerManager.getInstance().loadPlaylist(channel, link);
-        } else if (!link.isEmpty()) {
-            PlayerManager.getInstance().loadAndPlay(channel, link);
+        if (url != null) {
+            if (isUrl(url)) {
+                PlayerManager.getInstance().loadAndPlay(channel, url);
+            } else if (!isUrl(url)) {
+                String search = String.join(" ", url);
+                String link = "ytsearch:" + search;
+                PlayerManager.getInstance().loadAndPlay(channel, link);
+            } else {
+                channel.sendMessage("Song not found").queue();
+            }
         }
     }
 
@@ -140,4 +128,5 @@ public class PlayCommand {
             return false;
         }
     }
+
 }
