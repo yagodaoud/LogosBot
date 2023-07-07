@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static main.java.audio.PlayerManager.*;
+
 public class PlayCommand {
 
     private Member member;
@@ -29,10 +31,14 @@ public class PlayCommand {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         musicManager.scheduler.nextTrack();
     }
-    public static void stopCommand(Guild guild) {
+    public static boolean stopTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
-        PlayerManager.stopAndClear(musicManager.audioPlayer);
+        return stop(musicManager.audioPlayer);
+    }
 
+    public static boolean resumeTrack(Guild guild) {
+        final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
+        return resume(musicManager.audioPlayer);
     }
 
     public static void loopTrack(Guild guild) {

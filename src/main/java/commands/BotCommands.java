@@ -50,12 +50,11 @@ public class BotCommands extends ListenerAdapter {
             }
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
-                double finalPercentage = thresholdPercentage/100;
+                double finalPercentage = thresholdPercentage / 100;
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(finalPercentage);
                 alert.startAlert(event.getTextChannel());
                 String message = String.format("Alert created! Threshold is %s%%.", thresholdPercentage);
                 event.reply(message).queue();
-
             }
             case "bitcoin-alert-stop" -> {
                 BitcoinPriceAlert alert = new BitcoinPriceAlert();
@@ -82,7 +81,7 @@ public class BotCommands extends ListenerAdapter {
                 double targetPrice = Objects.requireNonNull(event.getOption("target-price")).getAsDouble();
                 BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
                 bitcoinPriceTrigger.setPriceForNotification(event.getTextChannel(), event.getUser().getId());
-                event.reply(String.format(locale,"Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
+                event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
 
             }
 //            case "random-audio-player" -> {
@@ -147,8 +146,18 @@ public class BotCommands extends ListenerAdapter {
                 event.reply("Left the voice channel").setEphemeral(false).queue();
             }
             case "stop" -> {
-                PlayCommand.stopCommand(event.getGuild());
-                event.reply("Stopped and cleared the queue").setEphemeral(false).queue();
+                if (PlayCommand.stopTrack(event.getGuild())) {
+                    event.reply("Stopped the queue").queue();
+                } else {
+                    event.reply("The queue is already paused").queue();
+                }
+            }
+            case "resume" -> {
+                if (PlayCommand.resumeTrack(event.getGuild())) {
+                    event.reply("Resumed the queue").queue();
+                } else {
+                    event.reply("The queue is already playing").queue();
+                }
             }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
@@ -195,7 +204,8 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("join", "The bot will join the current channel"));
         commandData.add(Commands.slash("skip", "Skips to next track"));
         commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
-        commandData.add(Commands.slash("stop", "Stops the track and clears the queue"));
+        commandData.add(Commands.slash("stop", "Stops the current queue"));
+        commandData.add(Commands.slash("resume", "Resumes the current queue"));
         commandData.add(Commands.slash("loop", "Loops through the queue"));
 //        commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
 

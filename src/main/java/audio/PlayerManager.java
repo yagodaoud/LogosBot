@@ -40,8 +40,21 @@ public class PlayerManager {
     }
 
 
-    public static void stopAndClear(AudioPlayer player) {
-        player.destroy();
+    public static boolean stop(AudioPlayer player) {
+        if (!player.isPaused()) {
+            player.setPaused(true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public static boolean resume(AudioPlayer player) {
+        if (player.isPaused()) {
+            player.setPaused(false);
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public void loadAndPlay(TextChannel channel, String trackUrl) {
@@ -52,10 +65,14 @@ public class PlayerManager {
             public void trackLoaded(AudioTrack track) {
                 musicManager.scheduler.queue(track);
 
+                long durationMs = track.getDuration();
+                String formattedDuration = formatDuration(durationMs);
+
                 channel.sendMessage("Added to queue: `")
                         .append(track.getInfo().title)
-                        .append(String.valueOf(track.getDuration()))
-                        .append("` by `")
+                        .append(" (")
+                        .append(formattedDuration)
+                        .append(")` by `")
                         .append(track.getInfo().author)
                         .append("`")
                         .queue();
@@ -68,13 +85,19 @@ public class PlayerManager {
                 final AudioTrack firstTrack = tracks.get(0);
                 musicManager.scheduler.queue(firstTrack);
 
+                long durationMs = firstTrack.getDuration();
+                String formattedDuration = formatDuration(durationMs);
+
                 if (trackUrl.contains("/playlist")) {
                     for (AudioTrack track : tracks) {
+                        if (track == tracks.get(0)) continue;
                         musicManager.scheduler.queue(track);
                     }
                     channel.sendMessage("Added to queue: `")
                             .append(firstTrack.getInfo().title)
-                            .append("` by `")
+                            .append(" (")
+                            .append(formattedDuration)
+                            .append(")` by `")
                             .append(firstTrack.getInfo().author)
                             .append("`")
                             .append(" and `")
@@ -84,13 +107,15 @@ public class PlayerManager {
                 } else {
                     channel.sendMessage("Added to queue: `")
                             .append(firstTrack.getInfo().title)
-                            .append("` by `")
+                            .append(" (")
+                            .append(formattedDuration)
+                            .append(")` by `")
                             .append(firstTrack.getInfo().author)
                             .append("`")
                             .queue();
+
                 }
             }
-
 
             @Override
             public void noMatches() {
@@ -102,6 +127,17 @@ public class PlayerManager {
 
             }
         });
+    }
+    private String formatDuration(long durationMs) {
+        long seconds = (durationMs / 1000) % 60;
+        long minutes = (durationMs / (1000 * 60)) % 60;
+        long hours = (durationMs / (1000 * 60 * 60)) % 24;
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else {
+            return String.format("%02d:%02d", minutes, seconds);
+        }
     }
 
 
