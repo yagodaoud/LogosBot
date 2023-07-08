@@ -26,8 +26,6 @@ import java.util.List;
 public class BotCommands extends ListenerAdapter {
 
     private final Map<String, BitcoinScheduledAlert> scheduledAlertMap = new HashMap<>();
-    //private final String audioDirectoryPath = "C:\\Users\\yagod\\Desktop\\Audios";
-
     private int toggle = 0;
 
     @Override
@@ -37,7 +35,6 @@ public class BotCommands extends ListenerAdapter {
         Locale locale = Locale.US;
 
         switch (command) {
-            case "test" -> event.reply("test").queue();
             case "crypto-price" -> {
                 OptionMapping cryptoOption = event.getOption("crypto-symbol");
                 String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
@@ -84,11 +81,6 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
 
             }
-//            case "random-audio-player" -> {
-//                RandomAudioPlayer randomAudioPlayer = new RandomAudioPlayer(event.getGuild(), event.getVoiceChannel());
-//                randomAudioPlayer.playRandomAudio();
-//                event.reply("EU SOU MAIS LOUCO QUE TODOS VOCÊS").queue();
-//            }
             case "join" -> {
                 Member member = event.getMember();
                 Guild guild = event.getGuild();
@@ -96,7 +88,6 @@ public class BotCommands extends ListenerAdapter {
                 GuildVoiceState voiceState = member.getVoiceState();
 
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
-
             }
             case "play" -> {
                 OptionMapping songOption = event.getOption("song_search_or_link");
@@ -110,7 +101,6 @@ public class BotCommands extends ListenerAdapter {
 
                 event.reply("Adding song!").setEphemeral(false).queue();
 
-
                 PlayCommand playCommand = new PlayCommand(songUrl);
                 playCommand.Play(member, voiceState);
                 playCommand.handle(channel);
@@ -119,23 +109,6 @@ public class BotCommands extends ListenerAdapter {
                 if (!audioChannel.getGuild().getAudioManager().isConnected()) {
                     audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
                 }
-            }
-            case "playlist-link" -> {
-                OptionMapping playlistOption = event.getOption("playlist_link");
-
-                String urls = playlistOption.getAsString();
-                System.out.println(urls);
-
-                TextChannel channel = event.getTextChannel();
-                Member member = event.getMember();
-                GuildVoiceState voiceState = member.getVoiceState();
-
-                event.reply("Adding playlist!").setEphemeral(false).queue();
-
-                PlayCommand playCommand = new PlayCommand(urls);
-                playCommand.Play(member, voiceState);
-                playCommand.handle(channel);
-
             }
             case "skip" -> {
                 PlayCommand.skipTrack(event.getGuild());
@@ -159,6 +132,13 @@ public class BotCommands extends ListenerAdapter {
                     event.reply("The queue is already playing").queue();
                 }
             }
+            case "clear" -> {
+                if (PlayCommand.clearQueue(event.getGuild(), event.getTextChannel())) {
+                    event.reply("Cleared the queue").queue();
+                } else {
+                    event.reply("Queue already empty").queue();
+                }
+            }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
                 toggle += 1;
@@ -179,35 +159,29 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         List<CommandData> commandData = new ArrayList<>();
-        //Test
-        commandData.add(Commands.slash("test", "testing"));
 
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
-        commandData.add(Commands.slash("crypto-price", "Get the price of a crypto").addOptions(cryptoTag));
+        commandData.add(Commands.slash("crypto-price", "Get the price of a crypto.").addOptions(cryptoTag));
 
         OptionData threshold = new OptionData(OptionType.STRING, "percentage", "Percentage that will trigger the alert (in %)", true);
-        commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin").addOptions(threshold));
-        commandData.add(Commands.slash("bitcoin-alert-stop", "Disable previous tracker for Bitcoin"));
+        commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin.").addOptions(threshold));
+        commandData.add(Commands.slash("bitcoin-alert-stop", "Disable previous tracker for Bitcoin."));
 
-        commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday"));
+        commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday."));
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
         OptionData targetPrice = new OptionData(OptionType.STRING, "target-price", "Target Price desired", true);
-        commandData.add(Commands.slash("bitcoin-price-trigger", "Bitcoin Price tracker, if the value is reached, the bot will send a notification").addOptions(targetPrice));
+        commandData.add(Commands.slash("bitcoin-price-trigger", "Bitcoin Price tracker, if the value is reached, the bot will send a notification.").addOptions(targetPrice));
 
         OptionData songUrl = new OptionData(OptionType.STRING, "song_search_or_link", "Enter the song search or url", true);
-        commandData.add(Commands.slash("play", "Plays a song").addOptions(songUrl));
-
-        OptionData playlistOption = new OptionData(OptionType.STRING, "playlist_link", "Enter the playlist link", true);
-        commandData.add(Commands.slash("playlist-link", "Load and play a playlist from Youtube").addOptions(playlistOption));
-
-        commandData.add(Commands.slash("join", "The bot will join the current channel"));
-        commandData.add(Commands.slash("skip", "Skips to next track"));
-        commandData.add(Commands.slash("leave", "The bot will leave the current channel"));
-        commandData.add(Commands.slash("stop", "Stops the current queue"));
-        commandData.add(Commands.slash("resume", "Resumes the current queue"));
-        commandData.add(Commands.slash("loop", "Loops through the queue"));
-//        commandData.add(Commands.slash("random-audio-player", "The bot will join a voice channel and play a random audio"));
+        commandData.add(Commands.slash("play", "Play a song or a playlist.").addOptions(songUrl));
+        commandData.add(Commands.slash("join", "Joins the current channel."));
+        commandData.add(Commands.slash("skip", "Skips to next track."));
+        commandData.add(Commands.slash("leave", "Disconnects the bot from the current channel."));
+        commandData.add(Commands.slash("stop", "Stops the current queue."));
+        commandData.add(Commands.slash("resume", "Resume the current queue."));
+        commandData.add(Commands.slash("clear", "Clear the queue."));
+        commandData.add(Commands.slash("loop", "Toggles the loop of the queue."));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }

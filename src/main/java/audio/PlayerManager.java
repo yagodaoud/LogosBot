@@ -52,11 +52,15 @@ public class PlayerManager {
         if (player.isPaused()) {
             player.setPaused(false);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
 
+    public boolean clearQueue(TextChannel channel) {
+        final AudioManager musicManager = this.getMusicManager(channel.getGuild());
+        return musicManager.scheduler.clearQueue();
+    }
     public void loadAndPlay(TextChannel channel, String trackUrl) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
 

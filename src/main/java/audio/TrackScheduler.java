@@ -24,6 +24,16 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
+    public boolean clearQueue() {
+        if (!this.queue.isEmpty()) {
+            this.queue.clear();
+            nextTrack();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public void nextTrack(){
         if (isRepeat){
             queue(player.getPlayingTrack().makeClone());
