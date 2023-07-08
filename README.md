@@ -28,6 +28,7 @@ The following permissions are required:
 - Stop 
 - Loop 
 - Leave
+- Clear
 
 ### Invitation link
 https://discord.com/api/oauth2/authorize?client_id=1019741763591741482&permissions=384437013568&scope=bot%20applications.commands
