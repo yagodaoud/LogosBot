@@ -56,6 +56,10 @@ public class TrackScheduler extends AudioEventAdapter {
         return isShuffled;
     }
 
+    public List<AudioTrack> getQueueTracks(){
+        return new ArrayList<>(queue);
+    }
+
     public void nextTrack(){
         if (isRepeat){
             queue(player.getPlayingTrack().makeClone());

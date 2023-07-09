@@ -11,6 +11,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,38 @@ public class PlayerManager {
     public boolean shuffleQueue(TextChannel channel){
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         return musicManager.scheduler.shuffleQueue();
+    }
+
+    public void getQueueTracks(TextChannel channel) {
+        final AudioManager musicManager = this.getMusicManager(channel.getGuild());
+        List<String> message = new ArrayList<>();
+        int iterator = 1;
+
+        for (AudioTrack track : musicManager.scheduler.getQueueTracks()) {
+            String trackInfo = String.format("%d - `%s` - `%s`", iterator, track.getInfo().title, track.getInfo().author);
+            message.add(trackInfo);
+            iterator++;
+        }
+
+        StringBuilder queueMessage = new StringBuilder();
+        if (!message.isEmpty()) {
+            if (message.size() >= 10) {
+                queueMessage.append("Next 10 songs:\n");
+            } else {
+                queueMessage.append(String.format("Next %d songs", message.size()));
+            }
+
+            for (int i = 0; i < message.size(); i++) {
+                queueMessage.append(message.get(i)).append("\n");
+                if (i == 9){
+                    break;
+                }
+            }
+        } else {
+            queueMessage.append("The queue is empty.");
+        }
+
+        channel.sendMessage(queueMessage.toString()).queue();
     }
 
     public void loadAndPlay(TextChannel channel, String trackUrl) {

@@ -49,6 +49,10 @@ public class PlayCommand {
         return PlayerManager.getInstance().shuffleQueue(channel);
     }
 
+    public static void getQueueTracks(TextChannel channel){
+        PlayerManager.getInstance().getQueueTracks(channel);
+    }
+
     public static void loopTrack(Guild guild) {
         toggleRepeat += 1;
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
