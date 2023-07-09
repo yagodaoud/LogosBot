@@ -61,6 +61,12 @@ public class PlayerManager {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         return musicManager.scheduler.clearQueue();
     }
+
+    public boolean shuffleQueue(TextChannel channel){
+        final AudioManager musicManager = this.getMusicManager(channel.getGuild());
+        return musicManager.scheduler.shuffleQueue();
+    }
+
     public void loadAndPlay(TextChannel channel, String trackUrl) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
 

@@ -41,8 +41,12 @@ public class PlayCommand {
         return resume(musicManager.audioPlayer);
     }
 
-    public static boolean clearQueue(Guild guild, TextChannel channel){
+    public static boolean clearQueue(TextChannel channel){
        return PlayerManager.getInstance().clearQueue(channel);
+    }
+
+    public static boolean shuffleQueue(TextChannel channel){
+        return PlayerManager.getInstance().shuffleQueue(channel);
     }
 
     public static void loopTrack(Guild guild) {

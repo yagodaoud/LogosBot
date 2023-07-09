@@ -5,13 +5,18 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
-    private final BlockingQueue<AudioTrack> queue;
+    private BlockingQueue<AudioTrack> queue;
     private boolean isRepeat = false;
+    boolean isShuffled = false;
 
     public TrackScheduler(AudioPlayer player) {
         this.player = player;
@@ -32,6 +37,23 @@ public class TrackScheduler extends AudioEventAdapter {
         } else {
             return false;
         }
+    }
+
+    public boolean shuffleQueue() {
+        BlockingQueue<AudioTrack> copyQueue = new LinkedBlockingQueue<>(queue);
+        List<AudioTrack> list = new ArrayList<>(copyQueue);
+
+        if (!isShuffled) {
+            Collections.shuffle(list);
+            this.queue = new LinkedBlockingQueue<>(list);
+            isShuffled = true;
+        } else {
+            this.queue.removeIf(track -> !copyQueue.contains(track));
+            this.queue = copyQueue;
+            isShuffled = false;
+        }
+
+        return isShuffled;
     }
 
     public void nextTrack(){

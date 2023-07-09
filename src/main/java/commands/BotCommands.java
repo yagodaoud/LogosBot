@@ -133,10 +133,17 @@ public class BotCommands extends ListenerAdapter {
                 }
             }
             case "clear" -> {
-                if (PlayCommand.clearQueue(event.getGuild(), event.getTextChannel())) {
+                if (PlayCommand.clearQueue(event.getTextChannel())) {
                     event.reply("Cleared the queue").queue();
                 } else {
                     event.reply("Queue already empty").queue();
+                }
+            }
+            case "shuffle" -> {
+                if (PlayCommand.shuffleQueue(event.getTextChannel())) {
+                    event.reply("Shuffle is on!").queue();
+                } else {
+                    event.reply("Shuffle is off!").queue();
                 }
             }
             case "loop" -> {
@@ -181,6 +188,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("stop", "Stops the current queue."));
         commandData.add(Commands.slash("resume", "Resume the current queue."));
         commandData.add(Commands.slash("clear", "Clear the queue."));
+        commandData.add(Commands.slash("shuffle", "Shuffle the queue."));
         commandData.add(Commands.slash("loop", "Toggles the loop of the queue."));
 
         event.getGuild().updateCommands().addCommands(commandData).queue();
