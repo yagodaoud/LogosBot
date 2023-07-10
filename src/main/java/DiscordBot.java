@@ -61,7 +61,8 @@ public class DiscordBot extends ListenerAdapter {
                 .build();
         bot.getGatewayPool().scheduleAtFixedRate(() -> {
             int onlineMembers = eventListener.getQuantityOnlineMembers();
-            bot.getPresence().setActivity(Activity.listening("Users online: " + onlineMembers));
+            //bot.getPresence().setActivity(Activity.listening("Users online: " + onlineMembers));
+            bot.getPresence().setActivity(Activity.listening("Never gonna give you up"));
         }, 0, 60, TimeUnit.SECONDS);
 
         bot.addEventListener(this);
