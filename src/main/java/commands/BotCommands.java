@@ -47,8 +47,7 @@ public class BotCommands extends ListenerAdapter {
             }
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
-                double finalPercentage = thresholdPercentage / 100;
-                BitcoinPriceAlert alert = new BitcoinPriceAlert(finalPercentage);
+                BitcoinPriceAlert alert = new BitcoinPriceAlert(thresholdPercentage);
                 alert.startAlert(event.getTextChannel());
                 String message = String.format("Alert created! Threshold is %s%%.", thresholdPercentage);
                 event.reply(message).queue();

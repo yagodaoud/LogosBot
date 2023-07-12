@@ -7,12 +7,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class BitcoinPriceAlert { //Bitcoin price alert at a certain percentage on a certain timeframe
+public class BitcoinPriceAlert {
 
-    private static double VARIATION_THRESHOLD = 0.01; //Set the variation deserved
+    private static double VARIATION_THRESHOLD;
 
-    private static double THRESHOLD = 0.01;
-    private static final long ALERT_INTERVAL= 3600; //Set the time frame in seconds
+    private static double THRESHOLD;
+    private static final long ALERT_INTERVAL= 3600;
     private boolean alerted;
     private double lastPrice;
 
