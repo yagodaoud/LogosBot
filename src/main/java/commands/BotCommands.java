@@ -7,6 +7,8 @@ import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.BitcoinScheduledAlert;
 import main.java.crypto.CryptoPriceDiscord;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -48,7 +50,7 @@ public class BotCommands extends ListenerAdapter {
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(thresholdPercentage);
-                alert.startAlert(event.getTextChannel());
+                alert.startAlert(event.getChannel().asTextChannel());
                 String message = String.format("Alert created! Threshold is %s%%.", thresholdPercentage);
                 event.reply(message).queue();
             }
@@ -59,31 +61,31 @@ public class BotCommands extends ListenerAdapter {
 
             }
             case "bitcoin-scheduled-alert-start" -> {
-                BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(event.getTextChannel());
+                BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(event.getChannel().asTextChannel());
                 scheduledAlert.start(LocalTime.of(21, 0));
-                scheduledAlertMap.put(event.getTextChannel().getId(), scheduledAlert);
+                scheduledAlertMap.put(event.getChannel().asTextChannel().getId(), scheduledAlert);
                 event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
 
             }
             case "bitcoin-scheduled-alert-stop" -> {
-                BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getTextChannel().getId());
+                BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getChannel().asTextChannel().getId());
                 if (scheduledAlert != null) {
                     scheduledAlert.stop();
-                    scheduledAlertMap.remove(event.getTextChannel().getId());
+                    scheduledAlertMap.remove(event.getChannel().asTextChannel().getId());
                     event.reply("The current scheduled alert has been stopped!").queue();
                 }
             }
             case "bitcoin-price-trigger" -> {
                 double targetPrice = Objects.requireNonNull(event.getOption("target-price")).getAsDouble();
                 BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
-                bitcoinPriceTrigger.setPriceForNotification(event.getTextChannel(), event.getUser().getId());
+                bitcoinPriceTrigger.setPriceForNotification(event.getChannel().asTextChannel(), event.getUser().getId());
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
 
             }
             case "join" -> {
                 Member member = event.getMember();
                 Guild guild = event.getGuild();
-                TextChannel channel = event.getTextChannel();
+                TextChannel channel = event.getChannel().asTextChannel();
                 GuildVoiceState voiceState = member.getVoiceState();
 
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
@@ -93,7 +95,7 @@ public class BotCommands extends ListenerAdapter {
                 String songUrl = songOption.getAsString();
                 System.out.println(songUrl);
 
-                TextChannel channel = event.getTextChannel();
+                TextChannel channel = event.getChannel().asTextChannel();
                 Member member = event.getMember();
                 GuildVoiceState voiceState = member.getVoiceState();
                 member.getVoiceState();
@@ -114,7 +116,7 @@ public class BotCommands extends ListenerAdapter {
                 event.reply("Skipped to next track").setEphemeral(false).queue();
             }
             case "leave" -> {
-                PlayCommand.leaveVoiceChannel(event.getTextChannel(), event.getGuild());
+                PlayCommand.leaveVoiceChannel(event.getChannel().asTextChannel(), event.getGuild());
                 event.reply("Left the voice channel").setEphemeral(false).queue();
             }
             case "stop" -> {
@@ -132,14 +134,14 @@ public class BotCommands extends ListenerAdapter {
                 }
             }
             case "clear" -> {
-                if (PlayCommand.clearQueue(event.getTextChannel())) {
+                if (PlayCommand.clearQueue(event.getChannel().asTextChannel())) {
                     event.reply("Cleared the queue").queue();
                 } else {
                     event.reply("Queue already empty").queue();
                 }
             }
             case "shuffle" -> {
-                if (PlayCommand.shuffleQueue(event.getTextChannel())) {
+                if (PlayCommand.shuffleQueue(event.getChannel().asTextChannel())) {
                     event.reply("Shuffle is on!").queue();
                 } else {
                     event.reply("Shuffle is off!").queue();
@@ -147,7 +149,7 @@ public class BotCommands extends ListenerAdapter {
             }
             case "queue" -> {
                 event.reply(String.format("Queue requested by <@%s>", event.getUser().getId())).queue();
-                PlayCommand.getQueueTracks(event.getTextChannel());
+                PlayCommand.getQueueTracks(event.getChannel().asTextChannel());
             }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
@@ -198,4 +200,3 @@ public class BotCommands extends ListenerAdapter {
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 }
-
