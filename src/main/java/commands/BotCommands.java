@@ -1,25 +1,30 @@
 package main.java.commands;
 
 import main.java.audio.PlayCommand;
-import main.java.audio.RandomAudioPlayer;
 import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.BitcoinScheduledAlert;
 import main.java.crypto.CryptoPriceDiscord;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.time.LocalTime;
 import java.util.*;
 import java.text.NumberFormat;
@@ -37,6 +42,34 @@ public class BotCommands extends ListenerAdapter {
         Locale locale = Locale.US;
 
         switch (command) {
+            case "help" -> {
+                Color DARK_BLUE = new Color(13, 58, 143);
+
+                EmbedBuilder builder = new EmbedBuilder();
+                builder.setTitle("Logos Bot")
+                        .setDescription("Open source discord bot with music features and crypto commands! Play your favorite songs directly from YouTube.")
+                        .setThumbnail("https://cdn-icons-png.flaticon.com/512/749/749024.png?w=826&t=st=1689123378~exp=1689123978~hmac=e975ec34409fd04e619d0f301ab29850bfdebdc13c749d2ee39b9f00bd8dcf9c")
+                        .setColor(DARK_BLUE)
+                        .addField("GitHub Repository", "https://github.com/yagodaoud/LogosBot", false)
+                        .addField("Send your Feedback!", "yagodaouddev@gmail.com or `krdzz` on discord ", false)
+                        .addField("Help", "Get help below", false)
+                        .build();
+
+                ActionRow actionRow = ActionRow.of(
+                                StringSelectMenu.create("menu:help")
+                                        .setPlaceholder("Select the command type you need help with:")
+                                        .addOption("Music", "Music")
+                                        .addOption("Crypto", "Crypto")
+                                        .setRequiredRange(1, 1)
+                                        .build().asEnabled());
+
+                MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
+                        .addEmbeds(builder.build())
+                        .addComponents(actionRow);
+
+                event.reply(messageBuilder.build()).queue();
+
+            }
             case "crypto-price" -> {
                 OptionMapping cryptoOption = event.getOption("crypto-symbol");
                 String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
@@ -80,7 +113,6 @@ public class BotCommands extends ListenerAdapter {
                 BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
                 bitcoinPriceTrigger.setPriceForNotification(event.getChannel().asTextChannel(), event.getUser().getId());
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
-
             }
             case "join" -> {
                 Member member = event.getMember();
@@ -166,11 +198,59 @@ public class BotCommands extends ListenerAdapter {
 
     }
 
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        if (event.getComponentId().equals("menu:help")) {
+            System.out.println(event.getValues());
+            for (String option : event.getValues()) {
+                if (option.equals("Music")) {
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder.setTitle("Music Commands")
+                            .setColor(Color.GREEN)
+                            .addField("Join", "Join the voice channel", true)
+                            .addField("Play", "Play a song/video/livestream by name or link", true)
+                            .addField("Skip", "Skip the current song", true)
+                            .addField("Stop", "Stop the music playback", true)
+                            .addField("Loop", "Toggle looping of the current song", true)
+                            .addField("Leave", "Leave the voice channel", true)
+                            .addField("Queue", "Show the upcoming songs", true)
+                            .addField("Clear", "Clear the music queue", true)
+                            .addField("Shuffle", "Toggle shuffling of the music queue", true)
+                            .setFooter("If the queue is stuck, skip or clear the queue and then add a track.");
 
-    //Registers the commands
+                    MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
+                            .addEmbeds(builder.build());
+
+                    event.reply(messageBuilder.build()).queue();
+
+
+                } else if (option.equals("Crypto")) {
+
+                        EmbedBuilder builder = new EmbedBuilder();
+                        builder.setTitle("Crypto Commands")
+                                .setColor(Color.BLUE)
+                                .addField("Crypto-Price", "Get the price of a cryptocurrency (e.g., BTC, ETH, etc.)", true)
+                                .addField("Bitcoin-Alert", "Check if the last Bitcoin price has a variation beyond the set threshold every hour", true)
+                                .addField("Bitcoin-Scheduled-Alert", "Schedule a daily alert to check the Bitcoin price at 12 am UTC", true)
+                                .addField("Bitcoin-Price Alert with a percentage threshold", "Set an alert for Bitcoin price based on a percentage threshold", true)
+                                .setFooter("If you need further assistance, please contact support.");
+
+                        MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
+                                .addEmbeds(builder.build());
+
+                        event.reply(messageBuilder.build()).queue();
+
+
+                }
+            }
+        }
+    }
+
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         List<CommandData> commandData = new ArrayList<>();
+
+        commandData.add(Commands.slash("help", "Get help with the bot's features"));
 
         OptionData cryptoTag = new OptionData(OptionType.STRING, "crypto-symbol", "Enter the symbol of the crypto you want the price of", true);
         commandData.add(Commands.slash("crypto-price", "Get the price of a crypto.").addOptions(cryptoTag));
@@ -200,3 +280,4 @@ public class BotCommands extends ListenerAdapter {
         event.getGuild().updateCommands().addCommands(commandData).queue();
     }
 }
+
