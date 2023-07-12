@@ -1,6 +1,6 @@
 package main.java.crypto;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.Locale;
 import java.util.concurrent.Executors;

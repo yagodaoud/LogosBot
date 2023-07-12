@@ -1,10 +1,11 @@
 package main.java.audio;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import static main.java.audio.PlayerManager.*;
 

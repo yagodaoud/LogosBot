@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 public class BitcoinScheduledAlert { //Bitcoin update at every candle close (12 am GMT [9 pm BRT])
     private final Timer timer;

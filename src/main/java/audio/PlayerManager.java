@@ -9,7 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -111,14 +111,15 @@ public class PlayerManager {
                 long durationMs = track.getDuration();
                 String formattedDuration = formatDuration(durationMs);
 
-                channel.sendMessage("Added to queue: `")
+                StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
                         .append(track.getInfo().title)
                         .append(" (")
                         .append(formattedDuration)
                         .append(")` by `")
                         .append(track.getInfo().author)
-                        .append("`")
-                        .queue();
+                        .append("`");
+
+                channel.sendMessage(messageBuilder.toString()).queue();
             }
 
             @Override
@@ -132,11 +133,7 @@ public class PlayerManager {
                 String formattedDuration = formatDuration(durationMs);
 
                 if (trackUrl.contains("/playlist")) {
-                    for (AudioTrack track : tracks) {
-                        if (track == tracks.get(0)) continue;
-                        musicManager.scheduler.queue(track);
-                    }
-                    channel.sendMessage("Added to queue: `")
+                    StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
                             .append(firstTrack.getInfo().title)
                             .append(" (")
                             .append(formattedDuration)
@@ -145,18 +142,25 @@ public class PlayerManager {
                             .append("`")
                             .append(" and `")
                             .append(String.valueOf(tracks.size() - 1))
-                            .append("` more")
-                            .queue();
+                            .append("` more");
+
+                    for (AudioTrack track : tracks) {
+                        if (track == tracks.get(0))
+                            continue;
+                        musicManager.scheduler.queue(track);
+                    }
+
+                    channel.sendMessage(messageBuilder.toString()).queue();
                 } else {
-                    channel.sendMessage("Added to queue: `")
+                    StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
                             .append(firstTrack.getInfo().title)
                             .append(" (")
                             .append(formattedDuration)
                             .append(")` by `")
                             .append(firstTrack.getInfo().author)
-                            .append("`")
-                            .queue();
+                            .append("`");
 
+                    channel.sendMessage(messageBuilder.toString()).queue();
                 }
             }
 

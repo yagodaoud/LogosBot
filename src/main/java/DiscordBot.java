@@ -4,13 +4,13 @@ import io.github.cdimascio.dotenv.Dotenv;
 import main.java.commands.BotCommands;
 import main.java.commands.BotEventListener;
 import main.java.commands.CustomActivity;
-import main.java.crypto.BitcoinGeneralPriceScheduler;
 import main.java.db.InsertUser;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.ReadyEvent;
+
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
@@ -47,7 +47,9 @@ public class DiscordBot extends ListenerAdapter {
                 .disableCache(EnumSet.of(
                         CacheFlag.CLIENT_STATUS,
                         CacheFlag.ACTIVITY,
-                        CacheFlag.EMOTE
+                        CacheFlag.EMOJI,
+                        CacheFlag.STICKER,
+                        CacheFlag.SCHEDULED_EVENTS
                 ))
                 .setChunkingFilter(ChunkingFilter.ALL)
                 .enableCache(EnumSet.of(

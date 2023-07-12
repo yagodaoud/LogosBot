@@ -38,7 +38,7 @@ public class BotEventListener extends ListenerAdapter implements BotStatusObserv
 
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        event.getTextChannel().sendMessage("reacted").queue();
+        event.getChannel().asTextChannel().sendMessage("reacted").queue();
     }
 
     public void addOnlineStatusChangeListener(Consumer<Integer> listener) {
