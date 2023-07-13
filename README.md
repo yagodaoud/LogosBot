@@ -20,6 +20,7 @@ The following permissions are required:
 - Crypto-Price [crypto tag {e.g. BTC, ETH, etc}]
 - Bitcoin-Alert (every hour)
 - Bitcoin-Scheduled-Alert (every day at 12 am UTC)
+- Bitcoin Price Trigger
 
 ### Music Search and Player
 - Join
@@ -29,6 +30,7 @@ The following permissions are required:
 - Loop 
 - Leave
 - Clear
+- Shuffle
 
 ### Invitation link
 https://discord.com/api/oauth2/authorize?client_id=1019741763591741482&permissions=384437013568&scope=bot%20applications.commands
