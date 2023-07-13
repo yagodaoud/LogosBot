@@ -207,15 +207,15 @@ public class BotCommands extends ListenerAdapter {
                     EmbedBuilder builder = new EmbedBuilder();
                     builder.setTitle("Music Commands")
                             .setColor(Color.GREEN)
-                            .addField("Join", "Join the voice channel", true)
-                            .addField("Play", "Play a song/video/livestream by name or link", true)
-                            .addField("Skip", "Skip the current song", true)
-                            .addField("Stop", "Stop the music playback", true)
-                            .addField("Loop", "Toggle looping of the current song", true)
-                            .addField("Leave", "Leave the voice channel", true)
-                            .addField("Queue", "Show the upcoming songs", true)
-                            .addField("Clear", "Clear the music queue", true)
-                            .addField("Shuffle", "Toggle shuffling of the music queue", true)
+                            .addField("Join", "Join the voice channel.", true)
+                            .addField("Play", "Play a song/video/livestream by name or link.", true)
+                            .addField("Skip", "Skip the current song.", true)
+                            .addField("Stop", "Stop the music playback.", true)
+                            .addField("Loop", "Toggle looping of the current song.", true)
+                            .addField("Leave", "Leave the voice channel.", true)
+                            .addField("Queue", "Show the upcoming songs.", true)
+                            .addField("Clear", "Clear the music queue.", true)
+                            .addField("Shuffle", "Toggle shuffling of the music queue.", true)
                             .setFooter("If the queue is stuck, skip or clear the queue and then add a track.");
 
                     MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
@@ -229,18 +229,14 @@ public class BotCommands extends ListenerAdapter {
                         EmbedBuilder builder = new EmbedBuilder();
                         builder.setTitle("Crypto Commands")
                                 .setColor(Color.BLUE)
-                                .addField("Crypto-Price", "Get the price of a cryptocurrency (e.g., BTC, ETH, etc.)", true)
-                                .addField("Bitcoin-Alert", "Check if the last Bitcoin price has a variation beyond the set threshold every hour", true)
-                                .addField("Bitcoin-Scheduled-Alert", "Schedule a daily alert to check the Bitcoin price at 12 am UTC", true)
-                                .addField("Bitcoin-Price Alert with a percentage threshold", "Set an alert for Bitcoin price based on a percentage threshold", true)
-                                .setFooter("If you need further assistance, please contact support.");
-
+                                .addField("Crypto Price", "Get the price of a crypto by its tag [BTC, ETH, etc].", true)
+                                .addField("Bitcoin Alert", "Set a threshold percentage that will e triggered every hour if reached.", true)
+                                .addField("Bitcoin Scheduled Alert", "Schedule a daily alert to check the Bitcoin price at 12 am UTC.", true)
+                                .addField("Bitcoin Price Trigger", "Create an alert to be triggered when Bitcoin reaches the target price.", true);
                         MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
                                 .addEmbeds(builder.build());
 
                         event.reply(messageBuilder.build()).queue();
-
-
                 }
             }
         }
