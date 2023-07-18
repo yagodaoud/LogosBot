@@ -3,8 +3,8 @@ package main.java.db;
 import java.sql.*;
 public class MySQLConnector {
 
-    public static Connection getConnection() throws SQLException {
-        final String dbConnection = "jdbc:mysql://localhost:3306/discordbot";
+    public static Connection getConnection() throws SQLException{
+        final String dbConnection = "jdbc:mysql://mysql-discord:3306/discordbot";
         final String dbUser = "root";
         final String dbPassword = "1234";
         Connection connection = null;
