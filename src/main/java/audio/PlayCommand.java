@@ -50,6 +50,10 @@ public class PlayCommand {
         return PlayerManager.getInstance().shuffleQueue(channel);
     }
 
+    public static StringBuilder getCurrentTrack(TextChannel channel){
+        return PlayerManager.getInstance().getCurrentTrack(channel);
+    }
+
     public static void getQueueTracks(TextChannel channel){
         PlayerManager.getInstance().getQueueTracks(channel);
     }

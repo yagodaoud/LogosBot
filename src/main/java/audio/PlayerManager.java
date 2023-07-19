@@ -68,6 +68,29 @@ public class PlayerManager {
         return musicManager.scheduler.shuffleQueue();
     }
 
+    public StringBuilder getCurrentTrack(TextChannel channel) {
+        final AudioManager musicManager = this.getMusicManager(channel.getGuild());
+        final AudioTrack currentTrack = musicManager.scheduler.getCurrentTrack();
+        StringBuilder queueMessage = new StringBuilder();
+
+        if (currentTrack != null) {
+            long durationMs = currentTrack.getDuration();
+            String formattedDuration = formatDuration(durationMs);
+
+            queueMessage.append("Current track: `")
+                    .append(currentTrack.getInfo().title)
+                    .append(" (")
+                    .append(formattedDuration)
+                    .append(")` by `")
+                    .append(currentTrack.getInfo().author)
+                    .append("`");
+            return queueMessage;
+        } else {
+            return queueMessage.append("Nothing is being played right now.");
+        }
+    }
+
+
     public void getQueueTracks(TextChannel channel) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         List<String> message = new ArrayList<>();
@@ -82,6 +105,7 @@ public class PlayerManager {
         StringBuilder queueMessage = new StringBuilder();
         if (!message.isEmpty()) {
             if (message.size() >= 10) {
+                queueMessage.append(getCurrentTrack(channel)).append("\n");
                 queueMessage.append("Next 10 songs:\n");
             } else {
                 queueMessage.append(String.format("Next %d songs", message.size()));

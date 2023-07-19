@@ -179,6 +179,9 @@ public class BotCommands extends ListenerAdapter {
                     event.reply("Shuffle is off!").queue();
                 }
             }
+            case "now-playing" -> {
+                event.reply(PlayCommand.getCurrentTrack(event.getChannel().asTextChannel()).toString()).queue();
+            }
             case "queue" -> {
                 event.reply(String.format("Queue requested by <@%s>", event.getUser().getId())).queue();
                 PlayCommand.getQueueTracks(event.getChannel().asTextChannel());
@@ -270,6 +273,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("resume", "Resume the current queue."));
         commandData.add(Commands.slash("clear", "Clear the queue."));
         commandData.add(Commands.slash("shuffle", "Shuffle the queue."));
+        commandData.add(Commands.slash("now-playing", "See what's being played."));
         commandData.add(Commands.slash("queue", "Display the queue."));
         commandData.add(Commands.slash("loop", "Toggles the loop of the queue."));
 

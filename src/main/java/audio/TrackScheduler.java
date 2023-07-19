@@ -68,6 +68,13 @@ public class TrackScheduler extends AudioEventAdapter {
 
     }
 
+    public AudioTrack getCurrentTrack() {
+        if (this.player.getPlayingTrack() != null) {
+            return this.player.getPlayingTrack();
+        }
+        return null;
+    }
+
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         super.onTrackEnd(player, track, endReason);
