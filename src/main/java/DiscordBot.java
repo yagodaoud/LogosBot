@@ -56,7 +56,6 @@ public class DiscordBot extends ListenerAdapter {
                         CacheFlag.ONLINE_STATUS
                 ))
                 .setActivity(Activity.listening(new CustomActivity(eventListener).getName()))
-                .setMemberCachePolicy(MemberCachePolicy.VOICE)
                 .addEventListeners(eventListener)
                 .addEventListeners(new BotCommands())
                 .enableCache(CacheFlag.VOICE_STATE)
