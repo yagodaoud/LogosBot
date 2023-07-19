@@ -108,7 +108,7 @@ public class PlayerManager {
                 queueMessage.append(getCurrentTrack(channel)).append("\n");
                 queueMessage.append("Next 10 songs:\n");
             } else {
-                queueMessage.append(String.format("Next %d songs", message.size()));
+                queueMessage.append(String.format("Next %d songs: \n", message.size()));
             }
 
             for (int i = 0; i < message.size(); i++) {
