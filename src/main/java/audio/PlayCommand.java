@@ -54,8 +54,8 @@ public class PlayCommand {
         return PlayerManager.getInstance().getCurrentTrack(channel);
     }
 
-    public static void getQueueTracks(TextChannel channel){
-        PlayerManager.getInstance().getQueueTracks(channel);
+    public static StringBuilder getQueueTracks(TextChannel channel){
+        return PlayerManager.getInstance().getQueueTracks(channel);
     }
 
     public static void loopTrack(Guild guild) {

@@ -91,7 +91,7 @@ public class PlayerManager {
     }
 
 
-    public void getQueueTracks(TextChannel channel) {
+    public StringBuilder getQueueTracks(TextChannel channel) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         List<String> message = new ArrayList<>();
         int iterator = 1;
@@ -118,10 +118,10 @@ public class PlayerManager {
                 }
             }
         } else {
-            queueMessage.append("The queue is empty.");
+           return queueMessage.append("The queue is empty.");
         }
 
-        channel.sendMessage(queueMessage.toString()).queue();
+        return queueMessage;
     }
 
     public void loadAndPlay(TextChannel channel, String trackUrl) {

@@ -195,8 +195,7 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(PlayCommand.getCurrentTrack(event.getChannel().asTextChannel()).toString()).queue();
             }
             case "queue" -> {
-                event.reply(String.format("Queue requested by <@%s>", event.getUser().getId())).queue();
-                PlayCommand.getQueueTracks(event.getChannel().asTextChannel());
+                event.reply(PlayCommand.getQueueTracks(event.getChannel().asTextChannel()).toString()).queue();
             }
             case "loop" -> {
                 PlayCommand.loopTrack(event.getGuild());
