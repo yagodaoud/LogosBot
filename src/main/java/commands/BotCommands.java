@@ -1,6 +1,9 @@
 package main.java.commands;
 
 import main.java.audio.PlayCommand;
+import main.java.commands.view.HelpCryptoView;
+import main.java.commands.view.HelpMusicView;
+import main.java.commands.view.HelpView;
 import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.BitcoinScheduledAlert;
@@ -18,8 +21,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -43,74 +44,45 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
+        Member member = event.getMember();
+        Guild guild = event.getGuild();
+        TextChannel channel = event.getChannel().asTextChannel();
+        GuildVoiceState voiceState = member.getVoiceState();
 
         memberList.add(Objects.requireNonNull(event.getMember()).getUser().getName());
-        System.out.println(memberList);
         commandUsedByMemberList.add(command);
         timestampList.add(Timestamp.from(Instant.now()));
 
         AudioManager audioManager = null; //if not initialized, audioManager won't work
 
+
+
         Locale locale = Locale.US;
 
         switch (command) {
-            case "help" -> {
-                Color DARK_BLUE = new Color(13, 58, 143);
-
-                EmbedBuilder builder = new EmbedBuilder();
-                builder.setTitle("Logos Bot")
-                        .setDescription("Open source discord bot with music features and crypto commands! Play your favorite songs directly from YouTube.")
-                        .setThumbnail("https://cdn-icons-png.flaticon.com/512/749/749024.png?w=826&t=st=1689123378~exp=1689123978~hmac=e975ec34409fd04e619d0f301ab29850bfdebdc13c749d2ee39b9f00bd8dcf9c")
-                        .setColor(DARK_BLUE)
-                        .addField("GitHub Repository", "https://github.com/yagodaoud/LogosBot", false)
-                        .addField("Send your Feedback!", "yagodaouddev@gmail.com or `krdzz` on discord ", false)
-                        .addField("Help", "Get help below", false)
-                        .build();
-
-                ActionRow actionRow = ActionRow.of(
-                                StringSelectMenu.create("menu:help")
-                                        .setPlaceholder("Select the command type you need help with:")
-                                        .addOption("Music", "Music")
-                                        .addOption("Crypto", "Crypto")
-                                        .setRequiredRange(1, 1)
-                                        .build().asEnabled());
-
-                MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
-                        .addEmbeds(builder.build())
-                        .addComponents(actionRow);
-
-                event.reply(messageBuilder.build()).queue();
-
-            }
+            case "help" -> event.reply(HelpView.getHelpView()).queue();
             case "crypto-price" -> {
-                OptionMapping cryptoOption = event.getOption("crypto-symbol");
-                String cryptoSymbolDiscord = cryptoOption.getAsString().toUpperCase();
-                System.out.println(cryptoSymbolDiscord);
+                String cryptoSymbolDiscord = event.getOption("crypto-symbol").getAsString().toUpperCase();
                 double price = CryptoPriceDiscord.getPrice(cryptoSymbolDiscord);
                 NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
-                String priceString = formatter.format(price);
-                event.reply("Request sent!").setEphemeral(false).queue();
-                event.getChannel().sendMessage("The current price of " + cryptoSymbolDiscord + " is " + priceString).queue();
+                event.reply("The current price of " + cryptoSymbolDiscord + " is " + formatter.format(price)).queue();
             }
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(thresholdPercentage);
                 alert.startAlert(event.getChannel().asTextChannel());
-                String message = String.format("Alert created! Threshold is %s%%.", thresholdPercentage);
-                event.reply(message).queue();
+                event.reply(String.format("Alert created! Threshold is %s%%.", thresholdPercentage)).queue();
             }
             case "bitcoin-alert-stop" -> {
                 BitcoinPriceAlert alert = new BitcoinPriceAlert();
                 alert.stopAlert();
                 event.reply("Alert disabled!").queue();
-
             }
             case "bitcoin-scheduled-alert-start" -> {
                 BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(event.getChannel().asTextChannel());
                 scheduledAlert.start(LocalTime.of(21, 0));
                 scheduledAlertMap.put(event.getChannel().asTextChannel().getId(), scheduledAlert);
                 event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
-
             }
             case "bitcoin-scheduled-alert-stop" -> {
                 BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getChannel().asTextChannel().getId());
@@ -118,6 +90,8 @@ public class BotCommands extends ListenerAdapter {
                     scheduledAlert.stop();
                     scheduledAlertMap.remove(event.getChannel().asTextChannel().getId());
                     event.reply("The current scheduled alert has been stopped!").queue();
+                } else {
+                    event.reply("No alert active right now.").queue();
                 }
             }
             case "bitcoin-price-trigger" -> {
@@ -127,23 +101,11 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
             }
             case "join" -> {
-                Member member = event.getMember();
-                Guild guild = event.getGuild();
-                TextChannel channel = event.getChannel().asTextChannel();
-                GuildVoiceState voiceState = member.getVoiceState();
-
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
             }
             case "play" -> {
-                OptionMapping songOption = event.getOption("song_search_or_link");
-                String songUrl = songOption.getAsString();
+                String songUrl = event.getOption("song_search_or_link").getAsString();
                 System.out.println(songUrl);
-
-                TextChannel channel = event.getChannel().asTextChannel();
-                Member member = event.getMember();
-                GuildVoiceState voiceState = member.getVoiceState();
-                member.getVoiceState();
-
                 event.reply("Adding song!").setEphemeral(false).queue();
 
                 PlayCommand playCommand = new PlayCommand(songUrl);
@@ -160,45 +122,45 @@ public class BotCommands extends ListenerAdapter {
                 event.reply("Skipped to next track").setEphemeral(false).queue();
             }
             case "leave" -> {
-                PlayCommand.leaveVoiceChannel(event.getChannel().asTextChannel(), event.getGuild());
+                PlayCommand.leaveVoiceChannel(channel, guild);
                 event.reply("Left the voice channel").setEphemeral(false).queue();
             }
             case "stop" -> {
-                if (PlayCommand.stopTrack(event.getGuild())) {
+                if (PlayCommand.stopTrack(guild)) {
                     event.reply("Stopped the queue").queue();
                 } else {
                     event.reply("The queue is already paused").queue();
                 }
             }
             case "resume" -> {
-                if (PlayCommand.resumeTrack(event.getGuild())) {
+                if (PlayCommand.resumeTrack(guild)) {
                     event.reply("Resumed the queue").queue();
                 } else {
                     event.reply("The queue is already playing").queue();
                 }
             }
             case "clear" -> {
-                if (PlayCommand.clearQueue(event.getChannel().asTextChannel())) {
+                if (PlayCommand.clearQueue(channel)) {
                     event.reply("Cleared the queue").queue();
                 } else {
                     event.reply("Queue already empty").queue();
                 }
             }
             case "shuffle" -> {
-                if (PlayCommand.shuffleQueue(event.getChannel().asTextChannel())) {
+                if (PlayCommand.shuffleQueue(channel)) {
                     event.reply("Shuffle is on!").queue();
                 } else {
                     event.reply("Shuffle is off!").queue();
                 }
             }
             case "now-playing" -> {
-                event.reply(PlayCommand.getCurrentTrack(event.getChannel().asTextChannel()).toString()).queue();
+                event.reply(PlayCommand.getCurrentTrack(channel).toString()).queue();
             }
             case "queue" -> {
-                event.reply(PlayCommand.getQueueTracks(event.getChannel().asTextChannel()).toString()).queue();
+                event.reply(PlayCommand.getQueueTracks(channel).toString()).queue();
             }
             case "loop" -> {
-                PlayCommand.loopTrack(event.getGuild());
+                PlayCommand.loopTrack(guild);
                 toggle += 1;
                 switch (toggle) {
                     case 1 -> event.reply("Loop is on!").queue();
@@ -215,42 +177,11 @@ public class BotCommands extends ListenerAdapter {
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if (event.getComponentId().equals("menu:help")) {
-            System.out.println(event.getValues());
             for (String option : event.getValues()) {
                 if (option.equals("Music")) {
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder.setTitle("Music Commands")
-                            .setColor(Color.GREEN)
-                            .addField("Join", "Join the voice channel.", true)
-                            .addField("Play", "Play a song/video/livestream by name or link.", true)
-                            .addField("Skip", "Skip the current song.", true)
-                            .addField("Stop", "Stop the music playback.", true)
-                            .addField("Loop", "Toggle looping of the current song.", true)
-                            .addField("Leave", "Leave the voice channel.", true)
-                            .addField("Queue", "Show the upcoming songs.", true)
-                            .addField("Clear", "Clear the music queue.", true)
-                            .addField("Shuffle", "Toggle shuffling of the music queue.", true)
-                            .setFooter("If the queue is stuck, skip or clear the queue and then add a track.");
-
-                    MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
-                            .addEmbeds(builder.build());
-
-                    event.reply(messageBuilder.build()).queue();
-
-
+                   event.reply(HelpMusicView.getMusicView()).queue();
                 } else if (option.equals("Crypto")) {
-
-                        EmbedBuilder builder = new EmbedBuilder();
-                        builder.setTitle("Crypto Commands")
-                                .setColor(Color.BLUE)
-                                .addField("Crypto Price", "Get the price of a crypto by its tag [BTC, ETH, etc].", true)
-                                .addField("Bitcoin Alert", "Set a threshold percentage that will e triggered every hour if reached.", true)
-                                .addField("Bitcoin Scheduled Alert", "Schedule a daily alert to check the Bitcoin price at 12 am UTC.", true)
-                                .addField("Bitcoin Price Trigger", "Create an alert to be triggered when Bitcoin reaches the target price.", true);
-                        MessageCreateBuilder messageBuilder = new MessageCreateBuilder()
-                                .addEmbeds(builder.build());
-
-                        event.reply(messageBuilder.build()).queue();
+                    event.reply(HelpCryptoView.getCryptoView()).queue();
                 }
             }
         }
