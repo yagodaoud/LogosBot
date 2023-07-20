@@ -4,6 +4,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 import main.java.commands.BotCommands;
 import main.java.commands.BotEventListener;
 import main.java.commands.CustomActivity;
+import main.java.db.InsertDashboardUser;
 import main.java.db.InsertUser;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -20,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.security.auth.login.LoginException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -83,6 +86,7 @@ public class DiscordBot extends ListenerAdapter {
         members = getMembers();
         try {
             InsertUser.insertUsers();
+            InsertDashboardUser.insertUsers();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -96,6 +100,11 @@ public class DiscordBot extends ListenerAdapter {
         }
         return members;
     }
+
+    public static List<String> getDashboardMembers() {
+        return BotCommands.memberList.stream().toList();
+    }
+
 
     public void shutdown() {
         bot.shutdown();

@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.*;
 import java.text.NumberFormat;
@@ -32,13 +34,23 @@ import java.util.List;
 
 public class BotCommands extends ListenerAdapter {
 
+    public static List<String> memberList = new ArrayList<>();
+    public static List<String> commandUsedByMemberList = new ArrayList<>();
+    public static List<Timestamp> timestampList = new ArrayList<>();
     private final Map<String, BitcoinScheduledAlert> scheduledAlertMap = new HashMap<>();
     private int toggle = 0;
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
-        AudioManager audioManager = null;
+
+        memberList.add(Objects.requireNonNull(event.getMember()).getUser().getName());
+        System.out.println(memberList);
+        commandUsedByMemberList.add(command);
+        timestampList.add(Timestamp.from(Instant.now()));
+
+        AudioManager audioManager = null; //if not initialized, audioManager won't work
+
         Locale locale = Locale.US;
 
         switch (command) {
