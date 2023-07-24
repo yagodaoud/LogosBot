@@ -22,23 +22,27 @@ public class InsertDashboardUser {
 
                 List<String> dashboardMembersList = BotCommands.memberList;
                 List<String> commandList = BotCommands.commandUsedByMemberList;
+                List<String> guildList = BotCommands.guildMemberWasInList;
                 List<Timestamp> timestampList = BotCommands.timestampList;
                 System.out.println(timestampList);
                 System.out.println(commandList);
+                System.out.println(guildList);
                 System.out.println(dashboardMembersList);
 
-                String sql = "INSERT INTO dashboardUsers (user_name, command, created_at) VALUES (?, ?, ?)";
+                String sql = "INSERT INTO dashboardUsers (user_name, command, guild, created_at) VALUES (?, ?, ?, ?)";
 
                 PreparedStatement statement = connector.prepareStatement(sql);
 
                 for (int i = 0; i < dashboardMembersList.size(); i++) {
                     String userName = dashboardMembersList.get(i);
                     String command = commandList.get(i);
+                    String guild = guildList.get(i);
                     Timestamp timestamp = timestampList.get(i);
 
                     statement.setString(1, userName);
                     statement.setString(2, command);
-                    statement.setTimestamp(3, timestamp);
+                    statement.setString(3, guild);
+                    statement.setTimestamp(4, timestamp);
 
                     statement.addBatch();
                 }
@@ -56,6 +60,7 @@ public class InsertDashboardUser {
                 System.out.println(numInserted + " users with command inserted");
                 dashboardMembersList.clear();
                 commandList.clear();
+                guildList.clear();
                 timestampList.clear();
 
             } catch (SQLException exception) {

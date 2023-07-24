@@ -8,7 +8,6 @@ import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.BitcoinScheduledAlert;
 import main.java.crypto.CryptoPriceDiscord;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -16,16 +15,13 @@ import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalTime;
@@ -37,6 +33,7 @@ public class BotCommands extends ListenerAdapter {
 
     public static List<String> memberList = new ArrayList<>();
     public static List<String> commandUsedByMemberList = new ArrayList<>();
+    public static List<String> guildMemberWasInList = new ArrayList<>();
     public static List<Timestamp> timestampList = new ArrayList<>();
     private final Map<String, BitcoinScheduledAlert> scheduledAlertMap = new HashMap<>();
     private int toggle = 0;
@@ -51,18 +48,17 @@ public class BotCommands extends ListenerAdapter {
 
         memberList.add(Objects.requireNonNull(event.getMember()).getUser().getName());
         commandUsedByMemberList.add(command);
+        guildMemberWasInList.add(guild.getName());
         timestampList.add(Timestamp.from(Instant.now()));
 
         AudioManager audioManager = null; //if not initialized, audioManager won't work
-
-
 
         Locale locale = Locale.US;
 
         switch (command) {
             case "help" -> event.reply(HelpView.getHelpView()).queue();
             case "crypto-price" -> {
-                String cryptoSymbolDiscord = event.getOption("crypto-symbol").getAsString().toUpperCase();
+                String cryptoSymbolDiscord = Objects.requireNonNull(event.getOption("crypto-symbol")).getAsString().toUpperCase();
                 double price = CryptoPriceDiscord.getPrice(cryptoSymbolDiscord);
                 NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
                 event.reply("The current price of " + cryptoSymbolDiscord + " is " + formatter.format(price)).queue();
@@ -70,7 +66,7 @@ public class BotCommands extends ListenerAdapter {
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
                 BitcoinPriceAlert alert = new BitcoinPriceAlert(thresholdPercentage);
-                alert.startAlert(event.getChannel().asTextChannel());
+                alert.startAlert(channel);
                 event.reply(String.format("Alert created! Threshold is %s%%.", thresholdPercentage)).queue();
             }
             case "bitcoin-alert-stop" -> {
@@ -79,16 +75,16 @@ public class BotCommands extends ListenerAdapter {
                 event.reply("Alert disabled!").queue();
             }
             case "bitcoin-scheduled-alert-start" -> {
-                BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(event.getChannel().asTextChannel());
+                BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(channel);
                 scheduledAlert.start(LocalTime.of(21, 0));
-                scheduledAlertMap.put(event.getChannel().asTextChannel().getId(), scheduledAlert);
+                scheduledAlertMap.put(channel.getId(), scheduledAlert);
                 event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
             }
             case "bitcoin-scheduled-alert-stop" -> {
-                BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(event.getChannel().asTextChannel().getId());
+                BitcoinScheduledAlert scheduledAlert = scheduledAlertMap.get(channel.getId());
                 if (scheduledAlert != null) {
                     scheduledAlert.stop();
-                    scheduledAlertMap.remove(event.getChannel().asTextChannel().getId());
+                    scheduledAlertMap.remove(channel.getId());
                     event.reply("The current scheduled alert has been stopped!").queue();
                 } else {
                     event.reply("No alert active right now.").queue();
@@ -97,14 +93,14 @@ public class BotCommands extends ListenerAdapter {
             case "bitcoin-price-trigger" -> {
                 double targetPrice = Objects.requireNonNull(event.getOption("target-price")).getAsDouble();
                 BitcoinPriceTrigger bitcoinPriceTrigger = new BitcoinPriceTrigger(targetPrice);
-                bitcoinPriceTrigger.setPriceForNotification(event.getChannel().asTextChannel(), event.getUser().getId());
+                bitcoinPriceTrigger.setPriceForNotification(channel, event.getUser().getId());
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
             }
             case "join" -> {
                 PlayCommand.joinVoiceChannel(channel, voiceState, guild);
             }
             case "play" -> {
-                String songUrl = event.getOption("song_search_or_link").getAsString();
+                String songUrl = Objects.requireNonNull(event.getOption("song_search_or_link")).getAsString();
                 System.out.println(songUrl);
                 event.reply("Adding song!").setEphemeral(false).queue();
 
