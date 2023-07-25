@@ -118,7 +118,7 @@ public class PlayCommand {
         GuildVoiceState memberVoiceState = member.getVoiceState();
 
         if (!memberVoiceState.getChannel().equals(voiceChannel)) {
-            return ("You must be in the same voice channel as me");
+            return ("You must be in the same voice channel as me.");
         }
 
 
@@ -130,7 +130,7 @@ public class PlayCommand {
                 String link = "ytsearch:" + search;
                 return PlayerManager.getInstance().loadAndPlay(channel, link);
             } else {
-                return ("Song not found");
+                return ("Song not found.");
             }
         }
         return ("An error occurred.");
