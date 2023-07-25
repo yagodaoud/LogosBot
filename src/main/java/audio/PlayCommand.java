@@ -14,6 +14,7 @@ public class PlayCommand {
     private Member member;
     private GuildVoiceState voiceState;
     public String url;
+    private static boolean joined = false;
     private static int toggleRepeat = 0;
 
 
@@ -82,9 +83,15 @@ public class PlayCommand {
             return ("Failed to join voice channel.");
         }
 
-        net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
-        audioManager.openAudioConnection(audioChannel);
-        return ("Joining voice channel: `" + audioChannel.getName() + "`");
+        if (!joined) {
+            net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
+            audioManager.openAudioConnection(audioChannel);
+            joined = true;
+            return ("Joining voice channel: `" + audioChannel.getName() + "`.");
+        } else if (joined){
+            return ("I'm already in a voice channel.");
+        }
+        return ("Failed to join voice channel.");
     }
 
 
@@ -92,6 +99,7 @@ public class PlayCommand {
         final AudioChannel connectedChannel = guild.getSelfMember().getVoiceState().getChannel();
         if (connectedChannel != null) {
             connectedChannel.getGuild().getAudioManager().closeAudioConnection();
+            joined = false;
             return "Left the voice channel.";
         } else {
             return ("Not connected to a voice channel.");
