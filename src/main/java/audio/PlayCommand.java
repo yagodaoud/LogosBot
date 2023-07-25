@@ -29,8 +29,7 @@ public class PlayCommand {
 
     public static String skipTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
-        musicManager.scheduler.nextTrack();
-        return ("Skipped to next track.");
+        return musicManager.scheduler.nextTrack();
     }
     public static boolean stopTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);

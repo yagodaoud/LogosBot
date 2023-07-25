@@ -35,6 +35,7 @@ public class TrackScheduler extends AudioEventAdapter {
             nextTrack();
             return true;
         } else {
+            nextTrack();
             return false;
         }
     }
@@ -60,14 +61,23 @@ public class TrackScheduler extends AudioEventAdapter {
         return new ArrayList<>(queue);
     }
 
-    public void nextTrack(){
-        if (isRepeat){
+    public String nextTrack() {
+        if (isRepeat) {
             queue(player.getPlayingTrack().makeClone());
         }
-        this.player.startTrack(this.queue.poll(), false);
 
+        AudioTrack nextTrack = queue.poll();
+        if (nextTrack != null) {
+            this.player.startTrack(nextTrack, false);
+            return "Skipped to the next track.";
+        } else {
+            if (player.getPlayingTrack() != null) {
+                player.stopTrack();
+                queue.clear();
+            }
+            return "The queue is already empty.";
+        }
     }
-
     public AudioTrack getCurrentTrack() {
         if (this.player.getPlayingTrack() != null) {
             return this.player.getPlayingTrack();
