@@ -116,21 +116,9 @@ public class BotCommands extends ListenerAdapter {
             case "shuffle" -> event.reply(PlayCommand.shuffleQueue(channel)).queue();
             case "now-playing" -> event.reply(PlayCommand.getCurrentTrack(channel).toString()).queue();
             case "queue" -> event.reply(PlayCommand.getQueueTracks(channel).toString()).queue();
-            case "loop" -> {
-                PlayCommand.loopTrack(guild);
-                toggle += 1;
-                switch (toggle) {
-                    case 1 -> event.reply("Loop is on!").queue();
-                    case 2 -> {
-                        event.reply("Loop is off!").queue();
-                        toggle = 0;
-                    }
-                }
+            case "loop" -> event.reply(PlayCommand.loopTrack(guild)).queue();
             }
         }
-
-    }
-
     @Override
     public void onStringSelectInteraction(StringSelectInteractionEvent event) {
         if (event.getComponentId().equals("menu:help")) {

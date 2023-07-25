@@ -57,15 +57,18 @@ public class PlayCommand {
         return PlayerManager.getInstance().getQueueTracks(channel);
     }
 
-    public static void loopTrack(Guild guild) {
+    public static String loopTrack(Guild guild) {
         toggleRepeat += 1;
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         if (toggleRepeat == 1) {
             musicManager.scheduler.setRepeat(true);
+            return ("Loop is on!");
         } else if (toggleRepeat == 2){
             musicManager.scheduler.setRepeat(false);
             toggleRepeat = 0;
+            return ("Loop is off!");
         }
+        return ("An error occurred.");
     }
 
 
