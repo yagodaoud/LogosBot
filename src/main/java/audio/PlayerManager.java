@@ -44,29 +44,29 @@ public class PlayerManager {
     }
 
 
-    public static boolean stop(AudioPlayer player) {
+    public static String stop(AudioPlayer player) {
         if (!player.isPaused()) {
             player.setPaused(true);
-            return true;
+            return ("Stopped the queue");
         } else {
-            return false;
+            return ("The queue is already paused") ;
         }
     }
-    public static boolean resume(AudioPlayer player) {
+    public static String resume(AudioPlayer player) {
         if (player.isPaused()) {
             player.setPaused(false);
-            return true;
+            return ("Resumed the queue");
         } else {
-            return false;
+            return ("The queue is already playing");
         }
     }
 
-    public boolean clearQueue(TextChannel channel) {
+    public String clearQueue(TextChannel channel) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         return musicManager.scheduler.clearQueue();
     }
 
-    public boolean shuffleQueue(TextChannel channel){
+    public String shuffleQueue(TextChannel channel){
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
         return musicManager.scheduler.shuffleQueue();
     }

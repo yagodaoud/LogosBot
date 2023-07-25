@@ -96,62 +96,26 @@ public class BotCommands extends ListenerAdapter {
                 bitcoinPriceTrigger.setPriceForNotification(channel, event.getUser().getId());
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
             }
-            case "join" -> {
-                event.reply(PlayCommand.joinVoiceChannel(voiceState, guild)).queue();
-            }
             case "play" -> {
                 String songUrl = Objects.requireNonNull(event.getOption("song_search_or_link")).getAsString();
                 System.out.println(songUrl);
-
                 PlayCommand playCommand = new PlayCommand(songUrl);
                 playCommand.Play(member, voiceState);
                 event.reply(playCommand.handle(channel)).queue();
-
                 VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
                 if (!audioChannel.getGuild().getAudioManager().isConnected()) {
                     audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
                 }
             }
-            case "skip" -> {
-                event.reply(PlayCommand.skipTrack(event.getGuild())).queue();
-            }
-            case "leave" -> {
-                event.reply(PlayCommand.leaveVoiceChannel(guild)).queue();
-            }
-            case "stop" -> {
-                if (PlayCommand.stopTrack(guild)) {
-                    event.reply("Stopped the queue").queue();
-                } else {
-                    event.reply("The queue is already paused").queue();
-                }
-            }
-            case "resume" -> {
-                if (PlayCommand.resumeTrack(guild)) {
-                    event.reply("Resumed the queue").queue();
-                } else {
-                    event.reply("The queue is already playing").queue();
-                }
-            }
-            case "clear" -> {
-                if (PlayCommand.clearQueue(channel)) {
-                    event.reply("Cleared the queue").queue();
-                } else {
-                    event.reply("Queue already empty").queue();
-                }
-            }
-            case "shuffle" -> {
-                if (PlayCommand.shuffleQueue(channel)) {
-                    event.reply("Shuffle is on!").queue();
-                } else {
-                    event.reply("Shuffle is off!").queue();
-                }
-            }
-            case "now-playing" -> {
-                event.reply(PlayCommand.getCurrentTrack(channel).toString()).queue();
-            }
-            case "queue" -> {
-                event.reply(PlayCommand.getQueueTracks(channel).toString()).queue();
-            }
+            case "join" -> event.reply(PlayCommand.joinVoiceChannel(voiceState, guild)).queue();
+            case "skip" -> event.reply(PlayCommand.skipTrack(event.getGuild())).queue();
+            case "leave" -> event.reply(PlayCommand.leaveVoiceChannel(guild)).queue();
+            case "stop" -> event.reply(PlayCommand.stopTrack(guild)).queue();
+            case "resume" -> event.reply(PlayCommand.resumeTrack(guild)).queue();
+            case "clear" -> event.reply(PlayCommand.clearQueue(channel)).queue();
+            case "shuffle" -> event.reply(PlayCommand.shuffleQueue(channel)).queue();
+            case "now-playing" -> event.reply(PlayCommand.getCurrentTrack(channel).toString()).queue();
+            case "queue" -> event.reply(PlayCommand.getQueueTracks(channel).toString()).queue();
             case "loop" -> {
                 PlayCommand.loopTrack(guild);
                 toggle += 1;

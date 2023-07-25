@@ -31,21 +31,21 @@ public class PlayCommand {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         return musicManager.scheduler.nextTrack();
     }
-    public static boolean stopTrack(Guild guild) {
+    public static String stopTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         return stop(musicManager.audioPlayer);
     }
 
-    public static boolean resumeTrack(Guild guild) {
+    public static String resumeTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         return resume(musicManager.audioPlayer);
     }
 
-    public static boolean clearQueue(TextChannel channel){
+    public static String clearQueue(TextChannel channel){
        return PlayerManager.getInstance().clearQueue(channel);
     }
 
-    public static boolean shuffleQueue(TextChannel channel){
+    public static String shuffleQueue(TextChannel channel){
         return PlayerManager.getInstance().shuffleQueue(channel);
     }
 

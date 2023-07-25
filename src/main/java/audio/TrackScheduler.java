@@ -29,18 +29,18 @@ public class TrackScheduler extends AudioEventAdapter {
         }
     }
 
-    public boolean clearQueue() {
+    public String clearQueue() {
         if (!this.queue.isEmpty()) {
             this.queue.clear();
             nextTrack();
-            return true;
+            return ("Cleared the queue");
         } else {
             nextTrack();
-            return false;
+            return ("Queue already empty");
         }
     }
 
-    public boolean shuffleQueue() {
+    public String shuffleQueue() {
         BlockingQueue<AudioTrack> copyQueue = new LinkedBlockingQueue<>(queue);
         List<AudioTrack> list = new ArrayList<>(copyQueue);
 
@@ -48,13 +48,13 @@ public class TrackScheduler extends AudioEventAdapter {
             Collections.shuffle(list);
             this.queue = new LinkedBlockingQueue<>(list);
             isShuffled = true;
+            return ("Shuffle is on!");
         } else {
             this.queue.removeIf(track -> !copyQueue.contains(track));
             this.queue = copyQueue;
             isShuffled = false;
+            return ("Shuffle is off!");
         }
-
-        return isShuffled;
     }
 
     public List<AudioTrack> getQueueTracks(){
