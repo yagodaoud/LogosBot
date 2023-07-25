@@ -14,8 +14,6 @@ public class PlayCommand {
     private Member member;
     private GuildVoiceState voiceState;
     public String url;
-    private static boolean joined;
-    private static int counter;
     private static int toggleRepeat = 0;
 
 
@@ -28,9 +26,10 @@ public class PlayCommand {
         this.voiceState = voiceState;
     }
 
-    public static void skipTrack(Guild guild) {
+    public static String skipTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
         musicManager.scheduler.nextTrack();
+        return ("Skipped to next track.");
     }
     public static boolean stopTrack(Guild guild) {
         final AudioManager musicManager = PlayerManager.getInstance().getMusicManager(guild);
@@ -70,77 +69,64 @@ public class PlayCommand {
     }
 
 
-    public static void joinVoiceChannel(TextChannel channel, GuildVoiceState voiceState, Guild guild) {
+    public static String joinVoiceChannel(GuildVoiceState voiceState, Guild guild) {
 
 
         if (!voiceState.inAudioChannel()) {
-            channel.sendMessage("You must be in a voice channel to use this command.").queue();
-            return;
+            return ("You must be in a voice channel to use this command.");
         }
 
         AudioChannel audioChannel = voiceState.getChannel();
 
         if (audioChannel == null) {
-            channel.sendMessage("Failed to join voice channel.").queue();
-            return;
+            return ("Failed to join voice channel.");
         }
 
-        if (voiceState.inAudioChannel()) {
-
-            net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
-            audioManager.openAudioConnection(audioChannel);
-            channel.sendMessage("Joining voice channel: " + audioChannel.getName()).queue();
-            joined = true;
-            counter += 1 ;
-        }
-
-        if (joined & counter == 2) {
-            channel.sendMessage("I'm already in the voice channel").queue();
-            counter = 0;
-        }
+        net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
+        audioManager.openAudioConnection(audioChannel);
+        return ("Joining voice channel: `" + audioChannel.getName() + "`");
     }
 
 
-    public static void leaveVoiceChannel(TextChannel channel, Guild guild) {
+    public static String leaveVoiceChannel(Guild guild) {
         final AudioChannel connectedChannel = guild.getSelfMember().getVoiceState().getChannel();
         if (connectedChannel != null) {
             connectedChannel.getGuild().getAudioManager().closeAudioConnection();
-            joined = false;
+            return "Left the voice channel.";
         } else {
-            channel.sendMessage("Not connected to a voice channel.").queue();
+            return ("Not connected to a voice channel.");
         }
     }
 
 
-    public void handle(TextChannel channel) {
+    public String handle(TextChannel channel) {
         AudioChannel audioChannel = voiceState.getChannel();
 
 
         if (!(audioChannel instanceof VoiceChannel)) {
-            channel.sendMessage("You have to be in a voice channel first").queue();
-            return;
+            return ("You must be in a voice channel to use this command.");
         }
 
         VoiceChannel voiceChannel = (VoiceChannel) audioChannel;
         GuildVoiceState memberVoiceState = member.getVoiceState();
 
         if (!memberVoiceState.getChannel().equals(voiceChannel)) {
-            channel.sendMessage("You must be in the same voice channel as me").queue();
-            return;
+            return ("You must be in the same voice channel as me");
         }
 
 
         if (url != null) {
             if (isUrl(url)) {
-                PlayerManager.getInstance().loadAndPlay(channel, url);
+               return PlayerManager.getInstance().loadAndPlay(channel, url);
             } else if (!isUrl(url)) {
                 String search = String.join(" ", url);
                 String link = "ytsearch:" + search;
-                PlayerManager.getInstance().loadAndPlay(channel, link);
+                return PlayerManager.getInstance().loadAndPlay(channel, link);
             } else {
-                channel.sendMessage("Song not found").queue();
+                return ("Song not found");
             }
         }
+        return ("An error occurred.");
     }
 
     private boolean isUrl(String url) {

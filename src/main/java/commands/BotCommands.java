@@ -97,16 +97,15 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(String.format(locale, "Tracking Bitcoin price when it reaches $%,.2f!", targetPrice)).queue();
             }
             case "join" -> {
-                PlayCommand.joinVoiceChannel(channel, voiceState, guild);
+                event.reply(PlayCommand.joinVoiceChannel(voiceState, guild)).queue();
             }
             case "play" -> {
                 String songUrl = Objects.requireNonNull(event.getOption("song_search_or_link")).getAsString();
                 System.out.println(songUrl);
-                event.reply("Adding song!").setEphemeral(false).queue();
 
                 PlayCommand playCommand = new PlayCommand(songUrl);
                 playCommand.Play(member, voiceState);
-                playCommand.handle(channel);
+                event.reply(playCommand.handle(channel)).queue();
 
                 VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
                 if (!audioChannel.getGuild().getAudioManager().isConnected()) {
@@ -114,12 +113,10 @@ public class BotCommands extends ListenerAdapter {
                 }
             }
             case "skip" -> {
-                PlayCommand.skipTrack(event.getGuild());
-                event.reply("Skipped to next track").setEphemeral(false).queue();
+                event.reply(PlayCommand.skipTrack(event.getGuild())).queue();
             }
             case "leave" -> {
-                PlayCommand.leaveVoiceChannel(channel, guild);
-                event.reply("Left the voice channel").setEphemeral(false).queue();
+                event.reply(PlayCommand.leaveVoiceChannel(guild)).queue();
             }
             case "stop" -> {
                 if (PlayCommand.stopTrack(guild)) {

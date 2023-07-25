@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PlayerManager {
     private static PlayerManager INSTANCE;
@@ -124,8 +127,10 @@ public class PlayerManager {
         return queueMessage;
     }
 
-    public void loadAndPlay(TextChannel channel, String trackUrl) {
+    public String loadAndPlay(TextChannel channel, String trackUrl) {
         final AudioManager musicManager = this.getMusicManager(channel.getGuild());
+        final AtomicReference<String> messageContainer = new AtomicReference<>();
+        CompletableFuture<Void> future = new CompletableFuture<>();
 
         this.audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
@@ -143,28 +148,30 @@ public class PlayerManager {
                         .append(track.getInfo().author)
                         .append("`");
 
-                channel.sendMessage(messageBuilder.toString()).queue();
+                String message = messageBuilder.toString();
+                messageContainer.set(message);
+                future.complete(null);
             }
 
             @Override
-            public void playlistLoaded(AudioPlaylist playlist) { //Search and play method (playlist loaded name must be ignored)
+            public void playlistLoaded(AudioPlaylist playlist) {
                 final List<AudioTrack> tracks = playlist.getTracks();
-
                 final AudioTrack firstTrack = tracks.get(0);
                 musicManager.scheduler.queue(firstTrack);
 
                 long durationMs = firstTrack.getDuration();
                 String formattedDuration = formatDuration(durationMs);
 
+                StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
+                        .append(firstTrack.getInfo().title)
+                        .append(" (")
+                        .append(formattedDuration)
+                        .append(")` by `")
+                        .append(firstTrack.getInfo().author)
+                        .append("`");
+
                 if (trackUrl.contains("/playlist")) {
-                    StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
-                            .append(firstTrack.getInfo().title)
-                            .append(" (")
-                            .append(formattedDuration)
-                            .append(")` by `")
-                            .append(firstTrack.getInfo().author)
-                            .append("`")
-                            .append(" and `")
+                    messageBuilder.append(" and `")
                             .append(String.valueOf(tracks.size() - 1))
                             .append("` more");
 
@@ -174,31 +181,36 @@ public class PlayerManager {
                         musicManager.scheduler.queue(track);
                     }
 
-                    channel.sendMessage(messageBuilder.toString()).queue();
+                    String message = messageBuilder.toString();
+                    messageContainer.set(message);
                 } else {
-                    StringBuilder messageBuilder = new StringBuilder("Added to queue: `")
-                            .append(firstTrack.getInfo().title)
-                            .append(" (")
-                            .append(formattedDuration)
-                            .append(")` by `")
-                            .append(firstTrack.getInfo().author)
-                            .append("`");
-
-                    channel.sendMessage(messageBuilder.toString()).queue();
+                    String message = messageBuilder.toString();
+                    messageContainer.set(message);
                 }
+
+                String message = messageBuilder.toString();
+                messageContainer.set(message);
+                future.complete(null);
             }
 
             @Override
             public void noMatches() {
-
+                future.completeExceptionally(new RuntimeException("No matches"));
             }
 
             @Override
             public void loadFailed(FriendlyException e) {
-
+                future.completeExceptionally(new RuntimeException("Load Failed"));
             }
         });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return messageContainer.get();
     }
+
     private String formatDuration(long durationMs) {
         long seconds = (durationMs / 1000) % 60;
         long minutes = (durationMs / (1000 * 60)) % 60;
