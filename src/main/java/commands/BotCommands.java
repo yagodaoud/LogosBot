@@ -140,7 +140,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("bitcoin-alert-start", "Create a tracker for Bitcoin.").addOptions(threshold));
         commandData.add(Commands.slash("bitcoin-alert-stop", "Disable previous tracker for Bitcoin."));
 
-        commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 9:00 PM BRT everyday."));
+        commandData.add(Commands.slash("bitcoin-scheduled-alert-start", "Send the price of Bitcoin at 12:00 AM UTC everyday."));
         commandData.add(Commands.slash("bitcoin-scheduled-alert-stop", "Disable the scheduled alert"));
 
         OptionData targetPrice = new OptionData(OptionType.STRING, "target-price", "Target Price desired", true);
