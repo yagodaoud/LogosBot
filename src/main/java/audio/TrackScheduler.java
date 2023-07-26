@@ -36,7 +36,7 @@ public class TrackScheduler extends AudioEventAdapter {
             return ("Cleared the queue");
         } else {
             nextTrack();
-            return ("Queue already empty");
+            return ("The queue is already empty.");
         }
     }
 
@@ -69,13 +69,14 @@ public class TrackScheduler extends AudioEventAdapter {
         AudioTrack nextTrack = queue.poll();
         if (nextTrack != null) {
             this.player.startTrack(nextTrack, false);
-            return "Skipped to the next track.";
+            return ("Skipped to the next track.");
         } else {
             if (player.getPlayingTrack() != null) {
                 player.stopTrack();
                 queue.clear();
+                return ("Skipped current track, the queue is now empty.");
             }
-            return "The queue is already empty.";
+            return ("The queue is already empty.");
         }
     }
     public AudioTrack getCurrentTrack() {
