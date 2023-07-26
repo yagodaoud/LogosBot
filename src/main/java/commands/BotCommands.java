@@ -26,7 +26,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.*;
-import java.text.NumberFormat;
 import java.util.List;
 
 public class BotCommands extends ListenerAdapter {
@@ -72,7 +71,7 @@ public class BotCommands extends ListenerAdapter {
             }
             case "bitcoin-scheduled-alert-start" -> {
                 BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(channel);
-                scheduledAlert.start(LocalTime.of(21, 0));
+                scheduledAlert.start(LocalTime.of(0, 0));
                 scheduledAlertMap.put(channel.getId(), scheduledAlert);
                 event.reply("The daily closing price of Bitcoin will be displayed from now on!").queue();
             }

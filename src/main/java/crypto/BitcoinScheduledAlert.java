@@ -28,6 +28,7 @@ public class BitcoinScheduledAlert { //Bitcoin update at every candle close (12 
             task.cancel();
         }
 
+        System.out.println("started");
         task = new TimerTask() { //Start TimerTask
             @Override
             public void run() {
@@ -42,7 +43,7 @@ public class BitcoinScheduledAlert { //Bitcoin update at every candle close (12 
             }
         };
 
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")); //Sync date with time zone
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("GMT"));
         ZonedDateTime scheduledTime = ZonedDateTime.of(now.toLocalDate(), time, now.getZone());
 
         if (now.compareTo(scheduledTime) > 0) {
