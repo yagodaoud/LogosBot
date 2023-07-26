@@ -36,7 +36,6 @@ public class BotCommands extends ListenerAdapter {
     public static List<String> guildMemberWasInList = new ArrayList<>();
     public static List<Timestamp> timestampList = new ArrayList<>();
     private final Map<String, BitcoinScheduledAlert> scheduledAlertMap = new HashMap<>();
-    private int toggle = 0;
 
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -59,9 +58,7 @@ public class BotCommands extends ListenerAdapter {
             case "help" -> event.reply(HelpView.getHelpView()).queue();
             case "crypto-price" -> {
                 String cryptoSymbolDiscord = Objects.requireNonNull(event.getOption("crypto-symbol")).getAsString().toUpperCase();
-                double price = CryptoPriceDiscord.getPrice(cryptoSymbolDiscord);
-                NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.US);
-                event.reply("The current price of " + cryptoSymbolDiscord + " is " + formatter.format(price)).queue();
+                event.reply(CryptoPriceDiscord.getFormattedPrice(cryptoSymbolDiscord)).queue();
             }
             case "bitcoin-alert-start" -> {
                 double thresholdPercentage = Objects.requireNonNull(event.getOption("percentage")).getAsDouble();
@@ -71,8 +68,7 @@ public class BotCommands extends ListenerAdapter {
             }
             case "bitcoin-alert-stop" -> {
                 BitcoinPriceAlert alert = new BitcoinPriceAlert();
-                alert.stopAlert();
-                event.reply("Alert disabled!").queue();
+                event.reply(alert.stopAlert()).queue();
             }
             case "bitcoin-scheduled-alert-start" -> {
                 BitcoinScheduledAlert scheduledAlert = new BitcoinScheduledAlert(channel);

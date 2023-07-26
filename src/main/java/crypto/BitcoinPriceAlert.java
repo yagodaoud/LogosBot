@@ -70,9 +70,10 @@ public class BitcoinPriceAlert {
     }
 
 
-    public void stopAlert() {
+    public String stopAlert() {
         executorService.shutdown();
         System.out.println("stopped");
+        return ("Alert disabled!");
     }
 }
 
