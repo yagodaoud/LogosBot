@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
@@ -99,10 +100,11 @@ public class BotCommands extends ListenerAdapter {
                 event.reply(playCommand.handle(channel)).queue();
                 VoiceChannel audioChannel = (VoiceChannel) voiceState.getChannel();
                 if (!audioChannel.getGuild().getAudioManager().isConnected()) {
+                    event.getGuild().getAudioManager().setSelfDeafened(true);
                     audioChannel.getGuild().getAudioManager().openAudioConnection(audioChannel);
                 }
             }
-            case "join" -> event.reply(PlayCommand.joinVoiceChannel(voiceState, guild)).queue();
+            case "join" -> event.reply(PlayCommand.joinVoiceChannel(voiceState, guild, event)).queue();
             case "skip" -> event.reply(PlayCommand.skipTrack(event.getGuild())).queue();
             case "leave" -> event.reply(PlayCommand.leaveVoiceChannel(guild)).queue();
             case "stop" -> event.reply(PlayCommand.stopTrack(guild)).queue();
@@ -128,7 +130,7 @@ public class BotCommands extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildReady(@NotNull GuildReadyEvent event) {
+    public void onReady(@NotNull ReadyEvent event) {
         List<CommandData> commandData = new ArrayList<>();
 
         commandData.add(Commands.slash("help", "Get help with the bot's features"));
@@ -159,7 +161,7 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("queue", "Display the queue."));
         commandData.add(Commands.slash("loop", "Toggles the loop of the queue."));
 
-        event.getGuild().updateCommands().addCommands(commandData).queue();
+        event.getJDA().updateCommands().addCommands(commandData).queue();
     }
 }
 
