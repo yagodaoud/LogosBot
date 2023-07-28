@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.net.URL;
 
@@ -72,7 +73,7 @@ public class PlayCommand {
     }
 
 
-    public static String joinVoiceChannel(GuildVoiceState voiceState, Guild guild) {
+    public static String joinVoiceChannel(GuildVoiceState voiceState, Guild guild, SlashCommandInteractionEvent event) {
 
 
         if (!voiceState.inAudioChannel()) {
@@ -88,6 +89,7 @@ public class PlayCommand {
         if (!joined) {
             net.dv8tion.jda.api.managers.AudioManager audioManager = guild.getAudioManager();
             audioManager.openAudioConnection(audioChannel);
+            event.getGuild().getAudioManager().setSelfDeafened(true);
             joined = true;
             return ("Joining voice channel: `" + audioChannel.getName() + "`.");
         } else if (joined){
