@@ -58,8 +58,6 @@ public class DiscordBot extends ListenerAdapter {
                 .enableCache(EnumSet.of(
                         CacheFlag.ONLINE_STATUS
                 ))
-                .setActivity(Activity.listening(new CustomActivity(eventListener).getName()))
-                .addEventListeners(eventListener)
                 .addEventListeners(new BotCommands())
                 .enableCache(CacheFlag.VOICE_STATE)
                 .build();
@@ -77,18 +75,6 @@ public class DiscordBot extends ListenerAdapter {
             DiscordBot discordBot = new DiscordBot();
         } catch (LoginException e) {
             System.out.println("Invalid token");
-        }
-    }
-
-    @Override
-    public void onReady(@NotNull ReadyEvent event) {
-        System.out.println("Bot is ready!");
-        members = getMembers();
-        try {
-            InsertUser.insertUsers();
-            InsertDashboardUser.insertUsers();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
     }
 

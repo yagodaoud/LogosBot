@@ -8,6 +8,8 @@ import main.java.crypto.BitcoinPriceAlert;
 import main.java.crypto.BitcoinPriceTrigger;
 import main.java.crypto.BitcoinScheduledAlert;
 import main.java.crypto.CryptoPriceDiscord;
+import main.java.db.InsertDashboardUser;
+import main.java.db.InsertUser;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -23,11 +25,14 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.List;
+
+import static main.java.DiscordBot.getMembers;
 
 public class BotCommands extends ListenerAdapter {
 
@@ -131,6 +136,7 @@ public class BotCommands extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
+
         List<CommandData> commandData = new ArrayList<>();
 
         commandData.add(Commands.slash("help", "Get help with the bot's features"));
@@ -161,7 +167,17 @@ public class BotCommands extends ListenerAdapter {
         commandData.add(Commands.slash("queue", "Display the queue."));
         commandData.add(Commands.slash("loop", "Toggles the loop of the queue."));
 
-        event.getJDA().updateCommands().addCommands(commandData).queue();
+        System.out.println("Bot is ready!");
+        getMembers();
+        try {
+            InsertUser.insertUsers();
+            InsertDashboardUser.insertUsers();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        event.getJDA().updateCommands().queue();
     }
+
+
 }
 
