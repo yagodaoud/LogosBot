@@ -175,7 +175,7 @@ public class BotCommands extends ListenerAdapter {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        event.getJDA().updateCommands().queue();
+        event.getJDA().updateCommands().addCommands(commandData).queue();
     }
 
 
