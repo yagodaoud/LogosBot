@@ -20,8 +20,7 @@ The following permissions are required:
 
 Learn how to use the bot's commands in just a few simple steps!
 
-#TODO (Gif)
-
+![gif](/assets/Demonstration.gif)
 
 ## 🧾 | Commands
 ### 💸 Related to crypto price and price alerts
