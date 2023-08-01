@@ -62,11 +62,17 @@ public class TrackScheduler extends AudioEventAdapter {
     }
 
     public String nextTrack() {
+        if (player.isPaused()){
+            return ("Resume the queue first to skip to the next track.");
+        }
         if (isRepeat) {
             queue(player.getPlayingTrack().makeClone());
         }
 
         AudioTrack nextTrack = queue.poll();
+
+
+
         if (nextTrack != null) {
             this.player.startTrack(nextTrack, false);
             return ("Skipped to the next track.");
